@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2026 Enid. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
+Released under the Hippocratic Mathematics License v1.0, as described in the file LICENSE.
 Authors: Enid
 -/
 import BoringLab.Games.Basic

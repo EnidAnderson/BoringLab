@@ -15,3 +15,10 @@ lake build
 ```
 
 Requires the `leanprover/lean4:v4.35.0-rc3` toolchain (installed via elan).
+
+## License
+
+The Hippocratic Mathematics License v1.0 (see `LICENSE`): the library may
+be used only in ways that help people and the natural environment; never
+for policing, war, cruelty, or profit; and no worker may ever be required
+to use it against her own conscience.
