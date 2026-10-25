@@ -22,3 +22,4 @@ path = "../BoringMath"
 
 [[lean_lib]]
 name = "BoringLab"
+globs = ["BoringLab.+"]
