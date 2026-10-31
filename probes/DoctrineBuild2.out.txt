@@ -1,0 +1,2 @@
+✔ [654/654] Built BoringLab.Doctrine.Doctrine (14s)
+Build completed successfully (654 jobs).

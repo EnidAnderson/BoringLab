@@ -1,0 +1,2 @@
+✔ [655/655] Built BoringLab.Doctrine.Localization (13s)
+Build completed successfully (655 jobs).
