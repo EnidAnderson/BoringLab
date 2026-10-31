@@ -1,0 +1,24 @@
+✔ [653/654] Built BoringLab.Doctrine.Computad (8.2s)
+✖ [654/654] Building BoringLab.Doctrine.Doctrine (13s)
+trace: .> LEAN_PATH=C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\Cli\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\batteries\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\Qq\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\aesop\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\proofwidgets\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\importGraph\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\LeanSearchClient\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\plausible\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\mathlib\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\BoringMath\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\BoringLab\.lake\build\lib\lean c:\Users\enida\.elan\toolchains\leanprover--lean4---v4.35.0-rc3\bin\lean.exe C:\Users\enida\Documents\Lean\BoringLab\BoringLab\Doctrine\Doctrine.lean -o C:\Users\enida\Documents\Lean\BoringLab\.lake\build\lib\lean\BoringLab\Doctrine\Doctrine.olean -i C:\Users\enida\Documents\Lean\BoringLab\.lake\build\lib\lean\BoringLab\Doctrine\Doctrine.ilean -c C:\Users\enida\Documents\Lean\BoringLab\.lake\build\ir\BoringLab\Doctrine\Doctrine.c --setup C:\Users\enida\Documents\Lean\BoringLab\.lake\build\ir\BoringLab\Doctrine\Doctrine.setup.json --json
+warning: BoringLab/Doctrine/Doctrine.lean:109:0: `Doctrine.localization_exists`: universes `u_1`, `u_2` only occur together. This usually means there is a `max` expression in the type where none of these universes appear on their own.
+
+Note: This linter can be disabled with `set_option linter.checkUnivs false`
+warning: BoringLab/Doctrine/Doctrine.lean:119:0: `Doctrine.moveClass_Q_inverts`: universes `u_1`, `u_2` only occur together. This usually means there is a `max` expression in the type where none of these universes appear on their own.
+
+Note: This linter can be disabled with `set_option linter.checkUnivs false`
+warning: BoringLab/Doctrine/Doctrine.lean:126:0: `Doctrine.declared_move_inverted`: universes `u_1`, `u_2` only occur together. This usually means there is a `max` expression in the type where none of these universes appear on their own.
+
+Note: This linter can be disabled with `set_option linter.checkUnivs false`
+warning: BoringLab/Doctrine/Doctrine.lean:138:0: `Doctrine.declared_move_inversion`: universes `u_1`, `u_2` only occur together. This usually means there is a `max` expression in the type where none of these universes appear on their own.
+
+Note: This linter can be disabled with `set_option linter.checkUnivs false`
+error: BoringLab/Doctrine/Doctrine.lean:203:85: stuck at solving universe constraint
+  max ?u.24 ?u.25 =?= u + 1
+while trying to unify
+  Doctrine.{max ?u.25 ?u.24} : Type ((max ?u.25 ?u.24) + 1)
+with
+  Doctrine : Type (u + 2)
+Some required targets logged failures:
+- BoringLab.Doctrine.Doctrine
+error: build failed

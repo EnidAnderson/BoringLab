@@ -1,0 +1,135 @@
+✖ [8963/8964] Building BoringLab.Games.Trace (129s)
+trace: .> LEAN_PATH=C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\Cli\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\batteries\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\Qq\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\aesop\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\proofwidgets\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\importGraph\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\LeanSearchClient\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\plausible\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\EnidsMathMadness\.lake\packages\mathlib\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\BoringMath\.lake\build\lib\lean;C:\Users\enida\Documents\Lean\BoringLab\.lake\build\lib\lean c:\Users\enida\.elan\toolchains\leanprover--lean4---v4.35.0-rc3\bin\lean.exe C:\Users\enida\Documents\Lean\BoringLab\BoringLab\Games\Trace.lean -o C:\Users\enida\Documents\Lean\BoringLab\.lake\build\lib\lean\BoringLab\Games\Trace.olean -i C:\Users\enida\Documents\Lean\BoringLab\.lake\build\lib\lean\BoringLab\Games\Trace.ilean -c C:\Users\enida\Documents\Lean\BoringLab\.lake\build\ir\BoringLab\Games\Trace.c --setup C:\Users\enida\Documents\Lean\BoringLab\.lake\build\ir\BoringLab\Games\Trace.setup.json --json
+warning: BoringLab/Games/Trace.lean:9:100: This line exceeds the 100 character limit, please shorten it!
+
+Note: This linter can be disabled with `set_option linter.style.longLine false`
+error: BoringLab/Games/Trace.lean:15:33: unexpected identifier; expected command
+error: BoringLab/Games/Trace.lean:47:6: Invalid field `anyB`: The environment does not contain `Finset.anyB`, so it is not possible to project the field `anyB` from an expression
+  s
+of type `Finset α`
+error: BoringLab/Games/Trace.lean:59:6: Invalid field `allB`: The environment does not contain `Finset.allB`, so it is not possible to project the field `allB` from an expression
+  s
+of type `Finset α`
+error: BoringLab/Games/Trace.lean:71:33: Invalid field `anyB`: The environment does not contain `Finset.anyB`, so it is not possible to project the field `anyB` from an expression
+  s
+of type `Finset α`
+error: BoringLab/Games/Trace.lean:71:44: Invalid field `anyB`: The environment does not contain `Finset.anyB`, so it is not possible to project the field `anyB` from an expression
+  s
+of type `Finset α`
+error: BoringLab/Games/Trace.lean:78:33: Invalid field `allB`: The environment does not contain `Finset.allB`, so it is not possible to project the field `allB` from an expression
+  s
+of type `Finset α`
+error: BoringLab/Games/Trace.lean:78:44: Invalid field `allB`: The environment does not contain `Finset.allB`, so it is not possible to project the field `allB` from an expression
+  s
+of type `Finset α`
+error: BoringLab/Games/Trace.lean:110:38: Invalid field `anyB`: The environment does not contain `Finset.anyB`, so it is not possible to project the field `anyB` from an expression
+  t.moves p
+of type `Finset t.pos`
+error: BoringLab/Games/Trace.lean:111:21: Invalid field `allB`: The environment does not contain `Finset.allB`, so it is not possible to project the field `allB` from an expression
+  t.moves p
+of type `Finset t.pos`
+warning: BoringLab/Games/Trace.lean:123:49: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+warning: BoringLab/Games/Trace.lean:119:8: declaration uses `sorry`
+warning: BoringLab/Games/Trace.lean:123:100: This line exceeds the 100 character limit, please shorten it!
+
+Note: This linter can be disabled with `set_option linter.style.longLine false`
+warning: BoringLab/Games/Trace.lean:140:8: declaration uses `sorry`
+error: BoringLab/Games/Trace.lean:155:40: Invalid field `anyB`: The environment does not contain `Finset.anyB`, so it is not possible to project the field `anyB` from an expression
+  t.moves p
+of type `Finset t.pos`
+error: BoringLab/Games/Trace.lean:156:23: Invalid field `allB`: The environment does not contain `Finset.allB`, so it is not possible to project the field `allB` from an expression
+  t.moves p
+of type `Finset t.pos`
+error: BoringLab/Games/Trace.lean:160:41: Type mismatch
+  Bool.noConfusion ⋯
+has type
+  Bool.noConfusionType ?m.42 ?m.43 false
+but is expected to have type
+  False
+warning: BoringLab/Games/Trace.lean:181:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+error: BoringLab/Games/Trace.lean:181:53: Application type mismatch: The argument
+  hn
+has type
+  t.terminal p = false
+but is expected to have type
+  ¬?m.12 = true
+in the application
+  Eq.mp (Bool.not_eq_true ?m.12) hn
+error: BoringLab/Games/Trace.lean:180:50: unsolved goals
+t : WinLoseTree
+p q : t.pos
+hq : q ∈ t.moves p
+hturn : t.turn p = true
+hn : t.terminal p = false
+hv : t.value q = true
+⊢ (if t.terminal p = true then t.turn p else if t.turn p = true then sorry else sorry) = true
+warning: BoringLab/Games/Trace.lean:191:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+error: BoringLab/Games/Trace.lean:191:53: Application type mismatch: The argument
+  hn
+has type
+  t.terminal p = false
+but is expected to have type
+  ¬?m.15 = true
+in the application
+  Eq.mp (Bool.not_eq_true ?m.15) hn
+error: BoringLab/Games/Trace.lean:190:50: unsolved goals
+t : WinLoseTree
+p q : t.pos
+hq : q ∈ t.moves p
+hturn : t.turn p = false
+hn : t.terminal p = false
+hv : (if t.terminal p = true then t.turn p else if t.turn p = true then sorry else sorry) = true
+⊢ t.value q = true
+error: BoringLab/Games/Trace.lean:224:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  List.take d l₁
+in the target expression
+  (fun l ↦ t.value ((List.take d l).getLastD t.root) = true) l₁ ↔
+    (fun l ↦ t.value ((List.take d l).getLastD t.root) = true) l₂
+
+t : WinLoseTree
+d : ℕ
+l₁ l₂ : List t.pos
+h : List.take d l₁ = List.take d l₂
+⊢ (fun l ↦ t.value ((List.take d l).getLastD t.root) = true) l₁ ↔
+    (fun l ↦ t.value ((List.take d l).getLastD t.root) = true) l₂
+error: BoringLab/Games/Trace.lean:245:35: Invalid field `anyB`: The environment does not contain `Finset.anyB`, so it is not possible to project the field `anyB` from an expression
+  t.moves p
+of type `Finset t.pos`
+error: BoringLab/Games/Trace.lean:246:23: Invalid field `allB`: The environment does not contain `Finset.allB`, so it is not possible to project the field `allB` from an expression
+  t.moves p
+of type `Finset t.pos`
+warning: BoringLab/Games/Trace.lean:247:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+error: BoringLab/Games/Trace.lean:247:53: Application type mismatch: The argument
+  hn
+has type
+  t.terminal p = false
+but is expected to have type
+  ¬?m.13 = true
+in the application
+  Eq.mp (Bool.not_eq_true ?m.13) hn
+error: BoringLab/Games/Trace.lean:246:51: unsolved goals
+t : WinLoseTree
+p : t.pos
+h : t.depth p = 1
+hn : t.terminal p = false
+⊢ (if t.terminal p = true then t.turn p else if t.turn p = true then sorry else sorry) =
+    if t.turn p = true then sorry else sorry
+error: BoringLab/Games/Trace.lean:275:28: Invalid field `anyB`: The environment does not contain `Finset.anyB`, so it is not possible to project the field `anyB` from an expression
+  t.moves p
+of type `Finset t.pos`
+Some required targets logged failures:
+- BoringLab.Games.Trace
+error: build failed
+EXIT=1
