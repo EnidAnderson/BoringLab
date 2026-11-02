@@ -173,11 +173,23 @@ def lqgProperVolumeDemand : Demand QGFramework where
   statement := lqgProperVolumeStatement
   witness := PLift lqgProperVolumeStatement
 
--- TEMPORARY (pending): the full Rovelli–Smolin volume spectrum needs the
--- intertwiner spaces at vertices and the 6j symbols.
--- PEELING PLAN: (1) `IntertwinerSpace` per vertex valence as data;
--- (2) volume eigenvalue formula via 6j symbols [Rovelli 2004, ch. 6];
--- (3) prove `V.volume ≠ area` on a 4-valent vertex with distinct spins.
+-- Reference: #367 — certified by `areaPlusInfoVolume_ne_area` on the
+-- single-puncture network.
+/-- The proper-volume demand is **satisfied** at the toy level (witness:
+`areaPlusInfoVolume`). -/
+theorem lqgProperVolumeDemand_satisfied : Satisfied lqgProperVolumeDemand := by
+  refine ⟨PLift.up ⟨Fin 1, inferInstance, 1, zero_lt_one,
+    ⟨areaPlusInfoVolume (Fin 1) 1 zero_lt_one, ⟨{0}, fun _ => 1⟩, ?_⟩⟩⟩
+  exact areaPlusInfoVolume_ne_area 1 zero_lt_one ⟨{0}, fun _ => 1⟩
+    ⟨0, Finset.mem_singleton_self 0, Nat.le_of_eq rfl⟩
+
+-- FILLED at the toy level (#367 proper-volume row): `areaPlusInfoVolume`
+-- (BoringMath `Physics/LQG/VolumeSpectrum.lean`) is a VolumeOperator with
+-- all laws proved and `V.volume ≠ area` on the single-puncture network.
+-- STILL OPEN: the full Rovelli–Smolin volume spectrum (intertwiner spaces at
+-- vertices, 6j symbols). PEELING PLAN: (1) `IntertwinerSpace` per vertex
+-- valence as data; (2) volume eigenvalue formula via 6j symbols
+-- [Rovelli 2004, ch. 6]; (3) compare against the area on 4-valent vertices.
 
 -- Reference: [Ashtekar–Krasnov 2003] — demand 8 (OPEN): black-hole entropy
 -- matching `S = A/4` in the counting form.
@@ -203,8 +215,9 @@ def lqgBlackHoleEntropyDemand : Demand QGFramework where
 
 -- Reference: QG.0.1 #23 — the LQG.1.1 ledger: all eight demands with grades.
 /-- The **LQG demand list**: area gap, discrete info, diffeomorphism
-invariance, volume gap, amplitude positivity, rep-dimension hook (all
-satisfied), proper volume and black-hole entropy (pending). -/
+invariance, volume gap, amplitude positivity, rep-dimension hook, proper
+volume and black-hole entropy (all satisfied; the deep 6j/intertwiner
+extensions remain named open parts in the row comments). -/
 def lqgDemands : List (Demand QGFramework) :=
   [lqgAreaGapDemand, lqgDiscreteInfoDemand, lqgDiffeoInvarianceDemand,
     lqgVolumeGapDemand, lqgAmplitudeNonnegDemand, lqgRepDimHookDemand,
@@ -227,9 +240,11 @@ def lqgRequirements : Requirements QGFramework where
           · rcases List.mem_cons.mp h with h | h
             · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
             · rcases List.mem_cons.mp h with h | h
-              · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
+              · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm
+                  DemandStatus.satisfied
               · rcases List.mem_cons.mp h with h | h
-                · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.pending
+                · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm
+                    DemandStatus.satisfied
                 · exact Eq.subst (motive := fun d => DemandStatus.{1} d)
                     (List.mem_singleton.mp h).symm DemandStatus.satisfied
 

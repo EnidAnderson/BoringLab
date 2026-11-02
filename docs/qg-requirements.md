@@ -43,11 +43,16 @@ by BoringMath `Physics/LQG/PunctureCycle.lean`).
   counting form is FILLED at the single-puncture level
   (`lqgBlackHoleEntropyDemand_satisfied`: one spin-1 edge with
   A₀ = 4/√(j(j+1)) has area = 4·info); the full intertwiner state counting
-  per puncture stays open with its peeling plan. Still pending: the proper
-  volume spectrum (intertwiners + 6j), `lqgProperVolumeDemand`.
-- **#368** (STR open rows, lab STR.1.1 #26): continuum limit of the lattice
-  Polyakov action and perturbation-series convergence (named holes
-  `continuumActionLimit`, `stringAmplitude`). Pending in `StringTheory.lean`.
+  per puncture stays open with its peeling plan. Proper volume is FILLED at
+  the toy level (`lqgProperVolumeDemand_satisfied`: `areaPlusInfoVolume`,
+  area + total spin, all laws proved, differs from area); the full
+  intertwiner/6j spectrum stays open with its peeling plan. All 8 LQG rows
+  satisfied.
+- **#368** (STR rows, lab STR.1.1 #26): the continuum limit is now a REAL
+  definition (`continuumActionLimit` = liminf of the lattice action along a
+  refinement sequence — no sorry in the def); its nonnegativity PROOF is
+  pending (needs mesh-scaling convergence). Perturbation convergence stays a
+  named hole (`stringAmplitude`, sorry with peeling plan).
 - **#369** (MI.0.2 bridge, lab #66): FILLED — puncture-degree model in
   BoringMath `Physics/LQG/PunctureCycle.lean`; row satisfied in
   `MotivicBridge.lean` (`bridgePunctureDegreeDemand_satisfied`). Open

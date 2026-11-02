@@ -10,6 +10,7 @@ import BoringMath.Physics.Strings.AdSCFT
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.CategoryTheory.Discrete.Basic
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # STR.1.1: the string-theory ledger over the MHI framework (ticket #26)
@@ -166,22 +167,24 @@ theorem strInfoHookDemand_satisfied : Satisfied strInfoHookDemand :=
 -- Reference: [Polchinski 1998] ch. 1 §1.2 — demand 7 (OPEN): the continuum
 -- limit of the lattice action.
 /-- The **continuum limit of the lattice Polyakov action** (named hole). -/
-noncomputable def continuumActionLimit {ιv : Type} [DecidableEq ιv] [Fintype ιv]
-    (ws : LatticeWorldsheet ιv) (T : ℝ) : ℝ := by
-  -- TEMPORARY SORRY: the continuum limit is not yet defined.
-  -- PEELING PLAN: (1) define the refinement sequence of lattices `ws_n`;
-  -- (2) define the limit of `polyakovAction T ws_n X` as the mesh → 0;
-  -- (3) identify it with the continuum Polyakov integral
-  -- [Polchinski 1998, ch. 1 §1.2, eq. (1.2.9)].
-  sorry
+noncomputable def continuumActionLimit {ιv : Type} [DecidableEq ιv]
+    (T : ℝ) (ref : ℕ → (LatticeWorldsheet ιv × (ιv → ℝ))) : ℝ :=
+  Filter.liminf (fun n => polyakovAction T (ref n).1 (ref n).2) Filter.atTop
 
--- Reference: [Polchinski 1998] ch. 1 — demand 7: the continuum limit exists
--- and is nonnegative.
+-- Reference: [Polchinski 1998] ch. 1 — demand 7 (PENDING, ticket #368): the
+-- continuum limit `continuumActionLimit` is now a REAL definition (liminf of
+-- the lattice action along a refinement sequence `ref`); what remains open
+-- is the proof of nonnegativity, which needs the mesh-scaling analysis
+-- (T_n = n·T under edge subdivision; [Polchinski 1998, ch. 1 §1.2]).
+-- PEELING PLAN: (1) define the refinement sequence ws_n of a lattice;
+-- (2) prove the scaled actions converge (Tendsto) so the liminf is the
+-- limit; (3) conclude 0 ≤ liminf via le_liminf_of_le + polyakovAction_nonneg.
 /-- **Demand (continuum limit)**: the continuum limit of the lattice action
 is nonnegative. -/
 def strContinuumLimitStatement : Prop :=
-  ∀ {ιv : Type} [DecidableEq ιv] [Fintype ιv] (ws : LatticeWorldsheet ιv) (T : ℝ),
-    0 ≤ continuumActionLimit ws T
+  ∀ {ιv : Type} [DecidableEq ιv] (T : ℝ)
+    (ref : ℕ → (LatticeWorldsheet ιv × (ιv → ℝ))),
+    0 ≤ continuumActionLimit T ref
 
 -- Reference: #26 — the demand as a typed carrier.
 /-- The **continuum-limit demand** on the MHI framework. -/
