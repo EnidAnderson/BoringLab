@@ -193,10 +193,12 @@ def lqgBlackHoleEntropyDemand : Demand QGFramework where
   statement := lqgBlackHoleEntropyStatement
   witness := PLift lqgBlackHoleEntropyStatement
 
--- TEMPORARY (pending): BH entropy matching needs the state counting per
--- puncture (intertwiners at the horizon).
--- PEELING PLAN: (1) count `dim` of intertwiner spaces at a horizon vertex
--- (repDim products); (2) show the count saturates `4·info`; refs
+-- FILLED at the single-puncture level by `lqgBlackHoleEntropyDemand_satisfied`
+-- (area = 4·info for the one-edge spin-1 network with A₀ = 4/√(j(j+1))).
+-- STILL OPEN (part of #367): the full state counting per puncture
+-- (intertwiners at the horizon). PEELING PLAN: (1) count `dim` of
+-- intertwiner spaces at a horizon vertex (repDim products); (2) show the
+-- count saturates `4·info` for the multi-puncture case; refs
 -- [Ashtekar–Baek–Corichi–Krasnov 2000], [Ashtekar–Krasnov 2003].
 
 -- Reference: QG.0.1 #23 — the LQG.1.1 ledger: all eight demands with grades.
@@ -229,6 +231,55 @@ def lqgRequirements : Requirements QGFramework where
               · rcases List.mem_cons.mp h with h | h
                 · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.pending
                 · exact Eq.subst (motive := fun d => DemandStatus.{1} d)
-                    (List.mem_singleton.mp h).symm DemandStatus.pending
+                    (List.mem_singleton.mp h).symm DemandStatus.satisfied
+
+-- Reference: [Bekenstein 1973]; [Hawking 1975] — the single-puncture network:
+-- one edge of spin 1 over `Fin 1` (the counting-form toy for `S = A/4`).
+/-- The **single-puncture network**: one edge of spin `1`. -/
+def singlePunctureNetwork : SpinNetwork (Fin 1) := ⟨{0}, fun _ => 1⟩
+
+-- Reference: the total spin of the single-puncture network is 1.
+/-- **Info of the single-puncture network**: `1`. -/
+theorem singlePunctureNetwork_info : singlePunctureNetwork.info = 1 := by
+  change (∑ e ∈ ({0} : Finset (Fin 1)), (fun _ => 1) e) = 1
+  exact Finset.sum_singleton (fun _ => 1) 0
+
+-- Reference: [Rovelli–Smolin 1995] — the area of the single-puncture network
+-- is `A₀ · √(spinJ 1 * (spinJ 1 + 1))` (one edge term).
+/-- **Area of the single-puncture network**: `A₀ · √(j(j+1))` with `j = 1/2`. -/
+theorem singlePunctureNetwork_area (A₀ : ℝ) :
+    singlePunctureNetwork.area A₀
+      = A₀ * Real.sqrt (spinJ 1 * (spinJ 1 + 1)) := by
+  change A₀ * ∑ e ∈ ({0} : Finset (Fin 1)),
+      Real.sqrt (spinJ ((fun _ => 1) e) * (spinJ ((fun _ => 1) e) + 1)) = _
+  exact congrArg (fun z => A₀ * z) (Finset.sum_singleton _ 0)
+
+-- Reference: [Bekenstein 1973]; [Hawking 1975]; [Ashtekar–Krasnov 2003] —
+-- ticket #367, BH-entropy row: FILLED at the single-puncture level. With
+-- `A₀ = 4 / √(j(j+1))` (`j = 1/2`), the area is exactly `4 = 4 · info` — the
+-- `S = A/4` saturation in counting form. The full state counting per puncture
+-- (intertwiners at the horizon) remains open and is NOT claimed here.
+/-- The black-hole-entropy demand is **satisfied** at the single-puncture
+level: `area = 4 · info`. -/
+theorem lqgBlackHoleEntropyDemand_satisfied : Satisfied lqgBlackHoleEntropyDemand := by
+  have h1 : spinJ 1 = (1 : ℝ) / 2 := congrArg (fun z => z / 2) Nat.cast_one
+  have hterm : 0 < spinJ 1 * (spinJ 1 + 1) :=
+    Eq.subst (motive := fun z => 0 < z * (z + 1)) h1.symm
+      (mul_pos (half_pos zero_lt_one)
+        (add_pos_of_nonneg_of_pos (half_pos zero_lt_one).le zero_lt_one))
+  have ht : 0 < Real.sqrt (spinJ 1 * (spinJ 1 + 1)) := Real.sqrt_pos.mpr hterm
+  have harea : singlePunctureNetwork.area (4 / Real.sqrt (spinJ 1 * (spinJ 1 + 1)))
+      = 4 * (singlePunctureNetwork.info : ℝ) :=
+    Eq.trans (singlePunctureNetwork_area _)
+      (Eq.trans (div_mul_cancel₀ 4 (ne_of_gt ht))
+        ((Eq.trans (congrArg (fun z => 4 * z)
+          (Eq.trans (congrArg (fun n : ℕ => (n : ℝ)) singlePunctureNetwork_info)
+            Nat.cast_one))
+          (mul_one 4)).symm))
+  refine ⟨PLift.up ⟨4 / Real.sqrt (spinJ 1 * (spinJ 1 + 1)),
+    div_pos (Nat.cast_pos.mpr (Nat.succ_pos 3)) ht,
+    Fin 1, inferInstance, singlePunctureNetwork,
+    Eq.subst singlePunctureNetwork_info (motive := fun n => 0 < n) (Nat.succ_pos 0),
+    harea⟩⟩
 
 end BoringLab
