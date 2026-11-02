@@ -24,3 +24,14 @@ The motivic-information hooks (MI.0.1 #67, #373): the info measures of the
 MHI instances are where the DM-motive/period layer attaches — on the LQG side
 the total spin expressed via representation dimensions `repDim j = 2j+1`;
 on the string side the boundary cell count bounding the bulk states.
+
+## MI.0.2 bridge (#66)
+
+`QGRequirements/MotivicBridge.lean` bridges the two ledgers to the Gysin lane
+(`BoringLab/Doctrine/Gysin.lean`, 4ebb51a): six bridge demands, all satisfied —
+the hook theorem `gysinMove_info_invariant` (cycle-factoring info is invariant
+under Gysin moves), moves-compose on the scheme computad (`gysinMove_comp`),
+LQG relabeling transitivity and string background independence as the
+graph/lattice move laws, the hologram action of the holographic toy, and the
+area-as-pushforward-degree row (equality form; the degree reading is the open
+part, peeling plan via the 9c88c74 residue-degree lane).
