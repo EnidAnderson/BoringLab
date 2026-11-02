@@ -7,6 +7,9 @@ import BoringLab.QGRequirements.LQG
 import BoringLab.QGRequirements.StringTheory
 import BoringLab.Doctrine.Gysin
 import BoringMath.AlgebraicGeometry.AlgebraicCycle.Trace
+import BoringMath.Physics.LQG.PunctureCycle
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # MI.0.2: the motivic bridge, row by row — physics ledgers ↔ the Gysin doctrine (#66)
@@ -236,13 +239,16 @@ def bridgePunctureDegreeDemand : Demand QGFramework where
   statement := bridgePunctureDegreeStatement
   witness := PLift bridgePunctureDegreeStatement
 
--- TEMPORARY (pending, ticket #369): the puncture-degree model.
--- PEELING PLAN: (1) take S = Spec of the base field, one point-cycle per
--- edge puncture with coefficient = spin label; (2) `degree_single` gives
--- r × residueDegree, nonzero when r ≠ 0 and the residue degree is nonzero;
--- (3) sum via `degree_add`; (4) identify the total degree with the area
--- eigenvalue sum and transfer the area gap. Refs [Fulton] ch. 1;
--- [Rovelli–Smolin 1995]; residue-degree lane 9c88c74.
+-- FILLED (#369): the puncture-degree model lives in BoringMath
+-- `Physics/LQG/PunctureCycle.lean` — over `Spec k` the spin network is one
+-- puncture point-cycle carrying the total spin, and `degree_single` +
+-- `residueDegree_id` give degree = info. The finer per-edge model (degrees =
+-- area eigenvalues) is the named extension.
+/-- The puncture-degree row is **satisfied** (witness: `spinNetworkCycle_degree_ne_zero`). -/
+theorem bridgePunctureDegreeDemand_satisfied : Satisfied bridgePunctureDegreeDemand := by
+  refine ⟨PLift.up ⟨⟨punctureScheme (ZMod 2)⟩,
+    fun ι _ sn => spinNetworkCycle (ZMod 2) sn, fun ι _ sn h => ?_⟩⟩
+  exact spinNetworkCycle_degree_ne_zero (ZMod 2) sn h
 
 -- Reference: QG.0.1 #23 — the MI.0.2 bridge ledger: seven rows with grades.
 /-- The **MI.0.2 bridge demand list** (six satisfied, one pending). -/
@@ -269,6 +275,6 @@ def bridgeRequirements : Requirements QGFramework where
             · rcases List.mem_cons.mp h with h | h
               · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
               · exact Eq.subst (motive := fun d => DemandStatus.{1} d)
-                  (List.mem_singleton.mp h).symm DemandStatus.pending
+                  (List.mem_singleton.mp h).symm DemandStatus.satisfied
 
 end BoringLab

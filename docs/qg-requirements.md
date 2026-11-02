@@ -28,13 +28,14 @@ on the string side the boundary cell count bounding the bulk states.
 ## MI.0.2 bridge (#66)
 
 `QGRequirements/MotivicBridge.lean` bridges the two ledgers to the Gysin lane
-(`BoringLab/Doctrine/Gysin.lean`, 4ebb51a): six bridge demands, all satisfied —
-the hook theorem `gysinMove_info_invariant` (cycle-factoring info is invariant
-under Gysin moves), moves-compose on the scheme computad (`gysinMove_comp`),
-LQG relabeling transitivity and string background independence as the
-graph/lattice move laws, the hologram action of the holographic toy, and the
-area-as-pushforward-degree row (equality form; the degree reading is the open
-part, peeling plan via the 9c88c74 residue-degree lane).
+(`BoringLab/Doctrine/Gysin.lean`, 4ebb51a): seven bridge demands, all
+satisfied — the hook theorem `gysinMove_info_invariant` (cycle-factoring info
+is invariant under Gysin moves), moves-compose on the scheme computad
+(`gysinMove_comp`), LQG relabeling transitivity and string background
+independence as the graph/lattice move laws, the hologram action of the
+holographic toy, the degree-trace row `gysinMove_degree_trace` (via
+`degree_pushforward`, Trace lane), and the puncture-degree row #369 (filled
+by BoringMath `Physics/LQG/PunctureCycle.lean`).
 
 ### Gap tickets (filed, then to be filled — never simplified away)
 
@@ -44,11 +45,10 @@ part, peeling plan via the 9c88c74 residue-degree lane).
 - **#368** (STR open rows, lab STR.1.1 #26): continuum limit of the lattice
   Polyakov action and perturbation-series convergence (named holes
   `continuumActionLimit`, `stringAmplitude`). Pending in `StringTheory.lean`.
-- **#369** (MI.0.2 bridge, lab #66): the puncture-degree model — every spin
-  network with positive total spin has a cycle model of nonzero degree, the
-  cycle-level reading of the area spectrum. Pending row in
-  `MotivicBridge.lean` (`bridgePunctureDegreeDemand`); the degree-trace row
-  above it IS filled (`gysinMove_degree_trace`, via `degree_pushforward`).
+- **#369** (MI.0.2 bridge, lab #66): FILLED — puncture-degree model in
+  BoringMath `Physics/LQG/PunctureCycle.lean`; row satisfied in
+  `MotivicBridge.lean` (`bridgePunctureDegreeDemand_satisfied`). Open
+  extension: per-edge puncture cycles with degrees = area eigenvalues.
 - The discrete-info demand is stated at full generality (existence of an MHI
   instance with discrete info measure, zero element as explicit data):
   `DiscreteInfo` + `mhi_exists_discreteInfo` in BoringMath
