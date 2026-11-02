@@ -148,7 +148,8 @@ def linfAxiomsToy : LInfAxioms linfPresToy where
     | isTrue h =>
         have e : (if n = 2 then
             [((linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩).comp
-              (linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩), (1 : ℤ))] else []) =
+              (linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩), (1 : ℤ))]
+            else []) =
             [((linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩).comp
               (linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩), (1 : ℤ))] :=
           ite_eq_left h
@@ -157,7 +158,8 @@ def linfAxiomsToy : LInfAxioms linfPresToy where
     | isFalse h =>
         have e : (if n = 2 then
             [((linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩).comp
-              (linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩), (1 : ℤ))] else []) =
+              (linfComputad.toPath ⟨⟨(1, 1), Nat.le_refl 1⟩, rfl, rfl⟩), (1 : ℤ))]
+            else []) =
             [] := ite_eq_right h
         exact Eq.subst (motive := fun l => l ∈ linfPresToy.relations) e.symm
           (List.mem_cons_of_mem _ List.mem_cons_self)
