@@ -6,6 +6,7 @@ Authors: Enid
 import BoringLab.QGRequirements.LQG
 import BoringLab.QGRequirements.StringTheory
 import BoringLab.Doctrine.Gysin
+import BoringMath.AlgebraicGeometry.AlgebraicCycle.Trace
 
 /-!
 # MI.0.2: the motivic bridge, row by row — physics ledgers ↔ the Gysin doctrine (#66)
@@ -48,6 +49,42 @@ theorem gysinMove_info_invariant {X Y : SchemeObj.{0}}
     F (@AlgebraicCycle.pushforward _ _ (pathMorphism p) hp D) =
       F (@AlgebraicCycle.pushforward _ _ (pathMorphism q) hq D) :=
   congrArg F (h hp hq D)
+
+-- Reference: [Fulton] ch. 1 §1.4 — the trace formula `degree_pushforward`
+-- (BoringMath `AlgebraicCycle/Trace.lean`): the degree of a pushforward is
+-- the degree along the composite. Combined with the move equality
+-- `p_* D = q_* D`, this gives: **Gysin moves preserve the degree along any
+-- outgoing morphism**.
+/-- **Gysin moves preserve the degree (trace)**: if `p ~ q` is a Gysin move,
+the degrees of `D` along `p ≫ r` and along `q ≫ r` agree. -/
+theorem gysinMove_degree_trace {X Y : SchemeObj.{0}}
+    {p q : Computad.Path SchemeComputad.{0} X Y} (h : gysinMove p q)
+    (hp : QuasiCompact (pathMorphism p)) (hq : QuasiCompact (pathMorphism q))
+    {Z : Scheme.{0}} (r : Y.scheme ⟶ Z) (D : AlgebraicCycle X.scheme ℤ)
+    (s : Finset X.scheme) (t : Finset Y.scheme) (hs : D.support ⊆ ↑s)
+    (htp : (pathMorphism p).base '' D.support ⊆ ↑t)
+    (htq : (pathMorphism q).base '' D.support ⊆ ↑t) :
+    AlgebraicCycle.degree (pathMorphism p ≫ r) D s hs
+      = AlgebraicCycle.degree (pathMorphism q ≫ r) D s hs := by
+  have hPQ : @AlgebraicCycle.pushforward _ _ (pathMorphism p) hp D
+      = @AlgebraicCycle.pushforward _ _ (pathMorphism q) hq D := h hp hq D
+  have e1 := AlgebraicCycle.degree_pushforward (pathMorphism p) r D s t hs htp
+  have e2 := AlgebraicCycle.degree_pushforward (pathMorphism q) r D s t hs htq
+  have mid : AlgebraicCycle.degree r (@AlgebraicCycle.pushforward _ _ (pathMorphism p) hp D)
+        t (Set.Subset.trans
+          (AlgebraicCycle.support_pushforward_subset_image (pathMorphism p) D) htp)
+      = AlgebraicCycle.degree r (@AlgebraicCycle.pushforward _ _ (pathMorphism q) hq D)
+        t (Set.Subset.trans
+          (AlgebraicCycle.support_pushforward_subset_image (pathMorphism q) D) htq) :=
+    (Eq.subst (motive := fun c => ∀ w : c.support ⊆ ↑t,
+        AlgebraicCycle.degree r (@AlgebraicCycle.pushforward _ _ (pathMorphism p) hp D) t
+            (Set.Subset.trans
+              (AlgebraicCycle.support_pushforward_subset_image (pathMorphism p) D) htp)
+          = AlgebraicCycle.degree r c t w)
+      hPQ (fun _ => rfl))
+      (Set.Subset.trans
+        (AlgebraicCycle.support_pushforward_subset_image (pathMorphism q) D) htq)
+  exact Eq.trans e1.symm (Eq.trans mid e2)
 
 -- Reference: #66 — bridge row 1: Gysin-move info-invariance (the hook).
 /-- **Bridge statement (hook)**: cycle-factoring info is Gysin-invariant. -/
@@ -150,50 +187,71 @@ def bridgeHolographicEqDemand : Demand QGFramework where
 /-- The holographic-equation row is **satisfied**. -/
 theorem bridgeHolographicEqDemand_satisfied : Satisfied bridgeHolographicEqDemand :=
   ⟨PLift.up (fun _ _ _ _ _ => rfl)⟩
-
--- Reference: #66 — bridge row 6 (OPEN): the LQG area spectrum as a
--- cycle-level statement — the area `A₀ Σ √(j(j+1))` is the degree of the
--- pushforward of the puncture cycles; the residue-degree lane (9c88c74,
--- pushforward_sectionPullback) is the cycle-level input.
-/-- **Bridge statement (area as pushforward degree)**: the area gap has a
-cycle-level counterpart — equal pushforwards have equal degrees. -/
-def bridgeAreaCycleStatement : Prop :=
+-- Reference: #66 — bridge row 6 (SATISFIED): Gysin moves preserve the degree
+-- (trace) of zero-cycles along any outgoing morphism — proved via the trace
+-- formula `degree_pushforward` (BoringMath `AlgebraicCycle/Trace.lean`,
+-- [Fulton] ch. 1 §1.4) plus the move equality `p_* D = q_* D`.
+/-- **Bridge statement (degree is move-invariant)**: Gysin moves preserve the
+degree of `D` along any outgoing morphism. -/
+def bridgeDegreeTraceStatement : Prop :=
   ∀ {X Y : SchemeObj.{0}} {p q : Computad.Path SchemeComputad.{0} X Y},
     gysinMove p q →
     ∀ (_hp : QuasiCompact (pathMorphism p)) (_hq : QuasiCompact (pathMorphism q))
-      (D : AlgebraicCycle X.scheme ℤ),
-      AlgebraicCycle.pushforward (pathMorphism p) D =
-        AlgebraicCycle.pushforward (pathMorphism q) D
+      {Z : Scheme.{0}} (r : Y.scheme ⟶ Z) (D : AlgebraicCycle X.scheme ℤ)
+      (s : Finset X.scheme) (t : Finset Y.scheme) (hs : D.support ⊆ ↑s)
+      (_htp : (pathMorphism p).base '' D.support ⊆ ↑t)
+      (_htq : (pathMorphism q).base '' D.support ⊆ ↑t),
+      AlgebraicCycle.degree (pathMorphism p ≫ r) D s hs
+        = AlgebraicCycle.degree (pathMorphism q ≫ r) D s hs
 
 -- Reference: #66 — the demand as a typed carrier.
-/-- The **area-as-degree bridge demand**. -/
-def bridgeAreaCycleDemand : Demand QGFramework where
-  statement := bridgeAreaCycleStatement
-  witness := PLift bridgeAreaCycleStatement
+/-- The **degree-trace bridge demand**. -/
+def bridgeDegreeTraceDemand : Demand QGFramework where
+  statement := bridgeDegreeTraceStatement
+  witness := PLift bridgeDegreeTraceStatement
 
--- TEMPORARY (pending): the statement is exactly `gysinMove` unwrapped, so it
--- is in fact certified by the definition — see
--- `bridgeAreaCycleDemand_satisfied` below; the OPEN part is the *degree*
--- reading (pushforward degrees = area spectrum), which needs the
--- residue-degree lemmas of the 9c88c74 lane.
--- PEELING PLAN: (1) `AlgebraicCycle.pushforward` degree formula along
--- sections (9c88c74 `pushforward_sectionPullback` peels); (2) identify the
--- puncture-cycle degrees with the area eigenvalues; (3) transfer the area
--- gap. Refs [Fulton] ch. 1; [Rovelli–Smolin 1995].
+-- Reference: Trace lane (`degree_pushforward`) + Gysin lane — certified.
+/-- The degree-trace row is **satisfied** (witness: `gysinMove_degree_trace`). -/
+theorem bridgeDegreeTraceDemand_satisfied : Satisfied bridgeDegreeTraceDemand :=
+  ⟨PLift.up (fun h _hp _hq _ r D s t hs _htp _htq =>
+    gysinMove_degree_trace h _hp _hq r D s t hs _htp _htq)⟩
 
--- Reference: 4ebb51a — the equality row is certified by unwrapping
--- `gysinMove`.
-/-- The area-as-degree row (equality form) is **satisfied**. -/
-theorem bridgeAreaCycleDemand_satisfied : Satisfied bridgeAreaCycleDemand :=
-  ⟨PLift.up (fun h _hp _hq D => h _hp _hq D)⟩
+-- Reference: #66 — bridge row 7 (OPEN, ticketed): the LQG area spectrum as a
+-- cycle-level statement: every spin network with spin has a cycle model of
+-- NONZERO degree (the puncture cycles at the vertices, whose degrees are the
+-- area eigenvalues via `degree_single` = r × residueDegree).
+/-- **Bridge statement (puncture-degree model, OPEN)**: there is a scheme and
+a cycle assignment from spin networks such that every network with positive
+total spin has a cycle of nonzero degree. -/
+def bridgePunctureDegreeStatement : Prop :=
+  ∃ (S : SchemeObj.{0})
+    (Φ : ∀ (ι : Type) [DecidableEq ι], SpinNetwork ι → AlgebraicCycle S.scheme ℤ),
+    ∀ (ι : Type) [DecidableEq ι] (sn : SpinNetwork ι), 0 < sn.info →
+      ∃ (s : Finset S.scheme) (hs : (Φ ι sn).support ⊆ ↑s),
+        AlgebraicCycle.degree (𝟙 S.scheme) (Φ ι sn) s hs ≠ 0
 
--- Reference: QG.0.1 #23 — the MI.0.2 bridge ledger: all six rows with grades.
-/-- The **MI.0.2 bridge demand list**. -/
+-- Reference: #66 — the demand as a typed carrier.
+/-- The **puncture-degree bridge demand** (open). -/
+def bridgePunctureDegreeDemand : Demand QGFramework where
+  statement := bridgePunctureDegreeStatement
+  witness := PLift bridgePunctureDegreeStatement
+
+-- TEMPORARY (pending, ticket #369): the puncture-degree model.
+-- PEELING PLAN: (1) take S = Spec of the base field, one point-cycle per
+-- edge puncture with coefficient = spin label; (2) `degree_single` gives
+-- r × residueDegree, nonzero when r ≠ 0 and the residue degree is nonzero;
+-- (3) sum via `degree_add`; (4) identify the total degree with the area
+-- eigenvalue sum and transfer the area gap. Refs [Fulton] ch. 1;
+-- [Rovelli–Smolin 1995]; residue-degree lane 9c88c74.
+
+-- Reference: QG.0.1 #23 — the MI.0.2 bridge ledger: seven rows with grades.
+/-- The **MI.0.2 bridge demand list** (six satisfied, one pending). -/
 def bridgeDemands : List (Demand QGFramework) :=
   [bridgeGysinInfoDemand, bridgeMovesComposeDemand, bridgeLQGRelabelDemand,
-    bridgeSTRBackgroundDemand, bridgeHolographicEqDemand, bridgeAreaCycleDemand]
+    bridgeSTRBackgroundDemand, bridgeHolographicEqDemand, bridgeDegreeTraceDemand,
+    bridgePunctureDegreeDemand]
 
--- Reference: #66 — the bridge ledger grading each row (all satisfied).
+-- Reference: #66 — the bridge ledger grading each row (last is pending #369).
 /-- The **MI.0.2 bridge requirements file** over the MHI framework. -/
 def bridgeRequirements : Requirements QGFramework where
   demands := bridgeDemands
@@ -208,7 +266,9 @@ def bridgeRequirements : Requirements QGFramework where
           · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
           · rcases List.mem_cons.mp h with h | h
             · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
-            · exact Eq.subst (motive := fun d => DemandStatus.{1} d)
-                (List.mem_singleton.mp h).symm DemandStatus.satisfied
+            · rcases List.mem_cons.mp h with h | h
+              · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
+              · exact Eq.subst (motive := fun d => DemandStatus.{1} d)
+                  (List.mem_singleton.mp h).symm DemandStatus.pending
 
 end BoringLab

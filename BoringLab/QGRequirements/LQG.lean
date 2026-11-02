@@ -6,7 +6,6 @@ Authors: Enid
 import BoringLab.QGRequirements.Demand
 import BoringMath.Physics.LQG.SpinNetwork
 import BoringMath.Physics.LQG.VolumeSpectrum
-import BoringMath.Physics.LQG.HolonomyFlux
 import BoringMath.Physics.LQG.SpinFoam
 import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Algebra.BigOperators.Ring.Finset
@@ -61,9 +60,9 @@ theorem lqgAreaGapDemand_satisfied : Satisfied lqgAreaGapDemand :=
 /-- **Demand (discrete info)**: the LQG kinematical MHI has a nonzero
 information gap. -/
 def lqgDiscreteInfoStatement : Prop :=
-  ∃ g : ℕ, g ≠ 0 ∧ ∀ x : (lqgKinematics (Fin 1)).bulk,
-    (lqgKinematics (Fin 1)).bulkInfo x = (0 : ℕ) ∨
-      g ≤ ((lqgKinematics (Fin 1)).bulkInfo x : ℕ)
+  ∃ mhi : QGFramework, ∃ z : mhi.info,
+    @DiscreteInfo mhi.bulk mhi.info mhi.infoCommMonoid mhi.infoPreorder
+      mhi.infoOrderedMonoid z mhi.bulkInfo
 
 -- Reference: #27 — the demand as a typed carrier.
 /-- The **discrete-information demand** on the MHI framework. -/
@@ -74,7 +73,7 @@ def lqgDiscreteInfoDemand : Demand QGFramework where
 -- Reference: #352 items 3–6 — certified by `lqgKinematics_info_gap`.
 /-- The discrete-info demand is **satisfied**. -/
 theorem lqgDiscreteInfoDemand_satisfied : Satisfied lqgDiscreteInfoDemand :=
-  ⟨PLift.up lqgKinematics_info_gap⟩
+  ⟨PLift.up mhi_exists_discreteInfo⟩
 
 -- Reference: [Rovelli 2004] ch. 6 — demand 3: diffeomorphism invariance.
 /-- **Demand (diffeomorphism invariance)**: the area is invariant under

@@ -35,3 +35,21 @@ LQG relabeling transitivity and string background independence as the
 graph/lattice move laws, the hologram action of the holographic toy, and the
 area-as-pushforward-degree row (equality form; the degree reading is the open
 part, peeling plan via the 9c88c74 residue-degree lane).
+
+### Gap tickets (filed, then to be filled — never simplified away)
+
+- **#367** (LQG open rows, lab LQG.1.1 #27): proper volume spectrum
+  (intertwiners + 6j symbols) and black-hole entropy `S = A/4` in counting
+  form. Pending rows with peeling plans in `LQG.lean`.
+- **#368** (STR open rows, lab STR.1.1 #26): continuum limit of the lattice
+  Polyakov action and perturbation-series convergence (named holes
+  `continuumActionLimit`, `stringAmplitude`). Pending in `StringTheory.lean`.
+- **#369** (MI.0.2 bridge, lab #66): the puncture-degree model — every spin
+  network with positive total spin has a cycle model of nonzero degree, the
+  cycle-level reading of the area spectrum. Pending row in
+  `MotivicBridge.lean` (`bridgePunctureDegreeDemand`); the degree-trace row
+  above it IS filled (`gysinMove_degree_trace`, via `degree_pushforward`).
+- The discrete-info demand is stated at full generality (existence of an MHI
+  instance with discrete info measure, zero element as explicit data):
+  `DiscreteInfo` + `mhi_exists_discreteInfo` in BoringMath
+  `Physics/LQG/SpinNetwork.lean`.
