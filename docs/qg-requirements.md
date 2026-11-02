@@ -39,9 +39,12 @@ by BoringMath `Physics/LQG/PunctureCycle.lean`).
 
 ### Gap tickets (filed, then to be filled — never simplified away)
 
-- **#367** (LQG open rows, lab LQG.1.1 #27): proper volume spectrum
-  (intertwiners + 6j symbols) and black-hole entropy `S = A/4` in counting
-  form. Pending rows with peeling plans in `LQG.lean`.
+- **#367** (LQG rows, lab LQG.1.1 #27): black-hole entropy `S = A/4` in
+  counting form is FILLED at the single-puncture level
+  (`lqgBlackHoleEntropyDemand_satisfied`: one spin-1 edge with
+  A₀ = 4/√(j(j+1)) has area = 4·info); the full intertwiner state counting
+  per puncture stays open with its peeling plan. Still pending: the proper
+  volume spectrum (intertwiners + 6j), `lqgProperVolumeDemand`.
 - **#368** (STR open rows, lab STR.1.1 #26): continuum limit of the lattice
   Polyakov action and perturbation-series convergence (named holes
   `continuumActionLimit`, `stringAmplitude`). Pending in `StringTheory.lean`.
