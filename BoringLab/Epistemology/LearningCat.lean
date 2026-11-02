@@ -30,8 +30,9 @@ Ticket #165 (EPI.9.1), building on #62's theory-element category
   NEGATIVE `no_link_loaded_to_fair` (PROVED); `coin_elim_isLimiting` (the coin
   elimination learner identifies the fair coin, PROVED); `#eval` prints the
   models of each coin hypothesis-theory;
-* `theoryElementCategory` — named hole: the `Category` instance (peeling
-  plan below).
+* `theoryElementCategory` — PROVED: the `Category` instance (Hom =
+  `TheoryLink`, laws by `proof_irrel`; computational content is #62's
+  `comp_assoc`/`comp_id`).
 
 ## References
 * [BMS] Balzer–Moulines–Sneed, *An Architectonic for Science*, 1987, ch. 2
@@ -201,20 +202,25 @@ theorem coin_elim_identifies :
 
 /-! ## The category instance (named hole) -/
 
--- Reference: ticket #165 — named hole.
--- TEMPORARY SORRY: the `Category` instance has not been assembled yet.
--- PEELING PLAN: `Hom t t' := TheoryLink carrier t t'`, `id := TheoryLink.id`,
--- `comp := TheoryLink.comp`, laws from `TheoryLink.comp_assoc`/`comp_id`
--- (the fields are `Prop`, so the laws close by proof irrelevance after
--- `cases`); then the prefix diagram `D p := hypTheory (mass (M p)) os` and
--- `identification_stable_links` upgrades to the colimit universal property
--- (in this poset-like category a filtered colimit is eventual constancy).
--- Next named lemmas: `theoryElementCategory`, `prefixDiagramFunctor`,
--- `colimit_eq_of_stable_links`.
-/-- The **category of theory-elements** over a carrier (named hole). -/
+-- Reference: ticket #165 — PROVED instance: `Hom t t' := TheoryLink carrier
+-- t t'` (a `Prop`-valued structure, so `Quiver.Hom` at `Sort 0` =
+-- `Category.{0}`), `id := TheoryLink.id`, `comp := TheoryLink.comp`; the
+-- three laws are equalities of `TheoryLink`s, i.e. of `Prop`s, so they close
+-- by `proof_irrel` (the computational content of the laws is
+-- `TheoryLink.comp_assoc`/`TheoryLink.comp_id`, proved in #62).
+set_option warn.classDefReducibility false in
+set_option linter.unusedVariables false in
+/-- The **category of theory-elements** over a carrier: objects are
+theory-elements, morphisms are specialization links (lifted to `Type` via
+`PLift`, since links are `Prop`-valued). -/
 def theoryElementCategory (carrier : Type) :
-    CategoryTheory.Category.{0} (TheoryElement carrier) := by
-  sorry
+    CategoryTheory.Category.{0} (TheoryElement carrier) where
+  Hom t t' := PLift (TheoryLink carrier t t')
+  id t := PLift.up (TheoryLink.id t)
+  comp f g := PLift.up (TheoryLink.comp f.down g.down)
+  id_comp f := PLift.down_injective (proof_irrel _ _)
+  comp_id f := PLift.down_injective (proof_irrel _ _)
+  assoc f g h := PLift.down_injective (proof_irrel _ _)
 
 -- Reference: ticket #165, acceptance — `#eval` prints the potential models of
 -- each coin hypothesis-theory: fair [heads, tails], biased [heads, tails],

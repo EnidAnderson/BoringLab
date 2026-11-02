@@ -27,6 +27,7 @@ explicit structure realizes it.
 | 14 | Bar/cobar = path composition (#108) | word computad; concatenation = path composition | `Deform/BarCobar.lean` | proved (`wordPath_append`); `barDifferential` named hole |
 | 15 | Unshuffles ↔ Jacobi sums (#109) | `unshuffles`, `jacobiTrees` | `Deform/Jacobi.lean` | proved (combinatorics); bracket assembly named hole |
 | 16 | Bayesian ledger ↔ game value process (#167) | `ConservedMassProcess` (value/next/law; conservation law) | `Epistemology/Bayes.lean` (EPI side: `bayesUpdate_conservation` proved; coin toy 3 = 3) ↔ `Games/Trace.lean` (games side: statement-layer — Trace unverified at pin session, do-not-import) | proved (EPI side) / statement-layer (games side) |
+| 17 | S-expression size ↔ Popper zero-cell count as simplicity measures (#168) | explicit `ℕ`-measure on a finite carrier + min-scan Ockham learner (`minComplexity`, `ockhamLearner`) | `Epistemology/Complexity.lean` (`Sexpr.size`, toy proved: min-scan picks the smaller description) ↔ `Epistemology/Ockham.lean` (`zeroCellCount`) | proved at toy level |
 
 ## Rules
 
