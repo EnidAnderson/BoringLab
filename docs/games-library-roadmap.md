@@ -381,9 +381,9 @@ are its pi0-components (observability = port words, #107). Filed:
 - #152 L.20.3 — quantum strategies as local systems on the path 2-groupoid
   (amplitudes = functor to Vect; Born rule over homotopy classes; classical
   = pi0-functions); statement layer, EWL 1999 anchor.
-- #154 L.20.2 (to be filed) — the path complex = the play-line complex (#11):
+- #154 L.20.2 — the path complex = the play-line complex (#11):
   Lemma C as a homotopy statement; the dark sector as higher homotopy.
-- #155 L.20.4 (to be filed) — 3-cells as coherence: regime cocycle (#64/#102),
+- #155 L.20.4 — 3-cells as coherence: regime cocycle (#64/#102),
   Beck-Chevalley (#71) as 3-cell laws at the 3-polygraph level.
 
 Discipline upgraded: `docs/polygraph-first.md` (supersedes
