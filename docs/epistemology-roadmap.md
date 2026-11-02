@@ -24,7 +24,7 @@ level ledger `mindChangesAtLevel` (#43) is the shared instrument.
 
 | Ticket | Project | Builds on | Grade target |
 |---|---|---|---|
-| #165 (EPI.9.1) | learning as a limit in the theory-element category | #62, #31, #43 | statement-layer + toy-proved |
+| #165 (EPI.9.1) | learning as a limit in the theory-element category | #62, #31, #43 | landed on pr/epi-truncation-learning (`LearningCat.lean`): hypTheory + specialization links proved (incl. negative), identification = limiting cone proved, coin toy proved; named hole: `theoryElementCategory` instance |
 | #166 (SCI.0.1.2) | history as a data stream (Tycho→Kepler through the level ledger) | SCI.0.1 #74, #43, EPI.5.1-fix | proved toy, no world-claim |
 | #167 (EPI.3.3) | Bayesian mass process = game value process (`ConservedMassProcess` + parallels row 16) | #31, TR.0 #10 | EPI half landed on pr/epi-truncation-learning (`Bayes.lean`: conservation proved, coin toy 3 = 3); games side statement-layer pending Trace verification |
 | #168 (EPI.3.4) | description-length complexity in the lab's own Lisp | #32, Lisp lane | toy-proved bound, relativization recorded |
