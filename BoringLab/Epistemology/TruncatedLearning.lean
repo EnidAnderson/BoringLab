@@ -4,6 +4,7 @@ Released under the Hippocratic Mathematics License v1.0, as described in the fil
 Authors: Enid
 -/
 import BoringLab.Epistemology.Network
+import BoringLab.Epistemology.OckhamBound
 import BoringLab.Epistemology.TruncatedTheory
 
 /-!
@@ -21,8 +22,8 @@ computed at a fixed level `n`.
   prefixes of length at most `n`; `truncatedIdentification_down` — PROVED:
   identification at level `m` restricts to every `n ≤ m` (fewer prefixes,
   same bound);
-* `mindChangesAtLevel_mono` — monotonicity of the level ledger — named hole
-  with a peeling plan (sublist of the filtered ranges);
+* `mindChangesAtLevel_mono` — monotonicity of the level ledger — proved
+  (the filtered range at level `n` is a sublist of the one at level `m`);
 * the toy: the #31 elimination learner on the coin schedule, mind changes
   per level printed by `#eval`.
 
@@ -38,6 +39,8 @@ computed at a fixed level `n`.
 -/
 
 namespace BoringLab
+
+open scoped List
 
 /-! ## The mind-change ledger at level n -/
 
@@ -69,22 +72,89 @@ theorem mindChangesAtLevel_zero {hyp datum : Type} [DecidableEq hyp]
   have e : mindChangesAtLevel M s 0 = mindChangesOn M [] := rfl
   exact e.trans hf
 
--- Reference: ticket #43 — monotonicity of the level ledger.
--- TEMPORARY SORRY: the honest proof has not been instantiated yet.
--- PEELING PLAN: `mindChangesAtLevel M s n = mindChangesOn M (s.take n)` and
--- `s.take n` is a prefix of `s` for `n ≤ s.length`; the filtered range of
--- the prefix is a sublist of the filtered range of the whole (via
--- `List.range` monotonicity + `List.filter_sublist`), and `List.Sublist`
--- gives the length bound. Next named lemmas: `range_sublist`,
--- `filter_sublist`, `mindChangesOn_sublist`.
+-- Reference: ticket #43 — monotonicity of the level ledger: proved below
+-- as `mindChangesAtLevel_mono` (via `changePredAt`, `List.range_sublist`,
+-- `List.Sublist.filter`, `List.Sublist.length_le`).
+-- Reference: the change predicate of `mindChangesOn` at index `i` on the
+-- schedule `s'` (factored out for readability).
+/-- The **change predicate** at index `i` on the schedule `s'`. -/
+def changePredAt {hyp datum : Type} [DecidableEq hyp] (M : List datum → hyp)
+    (s' : List datum) (i : ℕ) : Bool :=
+  if M (s'.take i) = M (s'.take (i + 1)) then false else true
+
+-- Reference: ticket #43 — monotonicity of the level ledger, proved: the
+-- filtered range at level `n` is a sublist of the one at level `m`
+-- (`filter_sublist_of_imp` + `List.range_sublist` + `List.Sublist.filter`),
+-- and `List.Sublist.length_le` closes the count. The predicate at level `n`
+-- implies the one at level `m`: below `n` the truncated takes agree
+-- (`List.take_take` + `Nat.min_eq_left`), and at `a ≥ n` the `n`-level takes
+-- are both `s.take n`, so the `n`-level predicate is `false`.
 /-- **The level ledger is monotone**: mind changes at level `n ≤ m` are at
-most those at level `m` (for `m ≤ s.length`). -/
+most those at level `m` (for `m ≤ s.length`) (proved). -/
 theorem mindChangesAtLevel_mono {hyp datum : Type} [DecidableEq hyp]
     (M : List datum → hyp) (s : List datum) {n m : ℕ} (h : n ≤ m) (hm : m ≤ s.length) :
     mindChangesAtLevel M s n ≤ mindChangesAtLevel M s m := by
-  sorry
-
-/-! ## Identification truncated at level n -/
+  have hns : n ≤ s.length := Nat.le_trans h hm
+  have hlen_n : (s.take n).length = n :=
+    Eq.trans (List.length_take (i := n) (l := s)) (Nat.min_eq_left hns)
+  have hlen_m : (s.take m).length = m :=
+    Eq.trans (List.length_take (i := m) (l := s)) (Nat.min_eq_left hm)
+  have hP : ∀ a : ℕ, changePredAt M (s.take n) a = true →
+      changePredAt M (s.take m) a = true := by
+    intro a hPa
+    unfold changePredAt at hPa
+    unfold changePredAt
+    rcases Nat.lt_or_ge a n with hlt | hge
+    · have e1 : (s.take n).take a = (s.take m).take a :=
+        ((List.take_take (i := a) (j := n) (l := s)).trans
+          (congrArg (s.take) (Nat.min_eq_left (Nat.le_of_lt hlt)))).trans
+        ((List.take_take (i := a) (j := m) (l := s)).trans
+          (congrArg (s.take) (Nat.min_eq_left (Nat.le_trans (Nat.le_of_lt hlt) h)))).symm
+      have e2 : (s.take n).take (a + 1) = (s.take m).take (a + 1) :=
+        ((List.take_take (i := a + 1) (j := n) (l := s)).trans
+          (congrArg (s.take) (Nat.min_eq_left (Nat.succ_le_of_lt hlt)))).trans
+        ((List.take_take (i := a + 1) (j := m) (l := s)).trans
+          (congrArg (s.take) (Nat.min_eq_left
+            (Nat.le_trans (Nat.succ_le_of_lt hlt) h)))).symm
+      have hd : Decidable (M ((s.take n).take a) = M ((s.take n).take (a + 1))) :=
+        inferInstance
+      cases hd with
+      | isTrue hc =>
+          exact (Bool.false_ne_true (hPa.symm.trans (ite_eq_left hc)).symm).elim
+      | isFalse hc =>
+          have hc' : ¬ (M ((s.take m).take a) = M ((s.take m).take (a + 1))) :=
+            fun hcd => hc ((congrArg M e1).trans (hcd.trans (congrArg M e2).symm))
+          exact ite_eq_right hc'
+    · have e1 : (s.take n).take a = s.take n :=
+        (List.take_take (i := a) (j := n) (l := s)).trans
+          (congrArg (s.take) (Nat.min_eq_right hge))
+      have e2 : (s.take n).take (a + 1) = s.take n :=
+        (List.take_take (i := a + 1) (j := n) (l := s)).trans
+          (congrArg (s.take) (Nat.min_eq_right (Nat.le_trans hge (Nat.le_succ a))))
+      have hc : M ((s.take n).take a) = M ((s.take n).take (a + 1)) :=
+        (congrArg M e1).trans (congrArg M e2).symm
+      exact (Bool.false_ne_true (hPa.symm.trans (ite_eq_left hc)).symm).elim
+  have hsub1 := filter_sublist_of_imp hP (List.range (n + 1))
+  have hsub2 : List.Sublist (List.range (n + 1)) (List.range (m + 1)) :=
+    List.range_sublist.mpr (Nat.succ_le_succ h)
+  have hsub3 : ((List.range (n + 1)).filter (changePredAt M (s.take m))) <+
+      ((List.range (m + 1)).filter (changePredAt M (s.take m))) :=
+    List.Sublist.filter _ hsub2
+  have hsub : ((List.range (n + 1)).filter (changePredAt M (s.take n))) <+
+      ((List.range (m + 1)).filter (changePredAt M (s.take m))) := hsub1.trans hsub3
+  have e : ((List.range (n + 1)).filter (changePredAt M (s.take n))).length ≤
+      ((List.range (m + 1)).filter (changePredAt M (s.take m))).length :=
+    List.Sublist.length_le hsub
+  show ((List.range ((s.take n).length + 1)).filter (changePredAt M (s.take n))).length ≤
+    ((List.range ((s.take m).length + 1)).filter (changePredAt M (s.take m))).length
+  exact Eq.subst (motive := fun k =>
+      ((List.range (k + 1)).filter (changePredAt M (s.take n))).length ≤
+      ((List.range ((s.take m).length + 1)).filter (changePredAt M (s.take m))).length)
+    hlen_n.symm
+    (Eq.subst (motive := fun k =>
+      ((List.range (n + 1)).filter (changePredAt M (s.take n))).length ≤
+      ((List.range (k + 1)).filter (changePredAt M (s.take m))).length)
+      hlen_m.symm e)
 
 -- Reference: ticket #43; [Gold] 1967 — #31's `IdentifiesInLimit` restricted
 -- to prefixes of length at most `n` (convergence at level `n`).

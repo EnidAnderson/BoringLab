@@ -30,3 +30,15 @@ rewritten in place without review — promotions are additive modules.
   homotopies) — named hole.
 - Localization statements: keep `Nonempty (Iso …)` Prop-only forms; the
   computad-level shadow is `declared_move_inverted` (data).
+
+## Semicategory / higher-computad upgrades (#111–#113)
+
+- #112 HOC.1: `Semicat := Computad` — semicategories are 1-computads;
+  comp-level theorems (path assoc, morphism functoriality, morphism
+  associativity via `Computad.Morph.ext`) proved WITHOUT identities;
+  categories = computads + `CatData` identity generators (degenerate case).
+- #113 HOC.2: `Port2` ((m,n)-ports with horizontal pasting + matched
+  vertical composition) and `Computad2` (2-cells as declared relations on
+  parallel paths); operads = the (m,1) specialization; L∞ (#109) and
+  deformation (#108) lines are (n,1) instances with linear relations.
+- #111 (parallel line): typed holes & plugging on computads (PD.1).

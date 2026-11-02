@@ -130,6 +130,11 @@ optimal play. -/
 def WinLoseTree.value (t : WinLoseTree) (p : t.pos) : Bool :=
   t.valueAux (t.depth p) p
 
+-- Reference: [Conway], Chapter 0.
+/-- Primitive definitional lemma: the value is `valueAux` at the depth. -/
+theorem WinLoseTree.value_eq_valueAux (t : WinLoseTree) (p : t.pos) :
+    t.value p = t.valueAux (t.depth p) p := rfl
+
 -- Reference: [Doob], Chapter II (martingale one-step property, Boolean shadow).
 -- PEELING PLAN: induction on `d`; the non-terminal case uses `depth_moves`
 -- to place every child below `d` (children have depth < depth p ≤ d, and the
@@ -140,11 +145,68 @@ def WinLoseTree.value (t : WinLoseTree) (p : t.pos) : Bool :=
 /-- Stabilization: above the depth of `p`, `valueAux` no longer changes. -/
 theorem WinLoseTree.valueAux_of_le (t : WinLoseTree) : ∀ d p,
     t.depth p ≤ d → t.valueAux d p = t.valueAux (t.depth p) p := by
-  -- TEMPORARY SORRY: the honest proof has not been instantiated yet.
-  -- PEELING PLAN: see the comment above the statement; extract
-  -- `valueAux_succ_nonterminal_max`, `valueAux_succ_nonterminal_min`,
-  -- `depth_pos_of_nonterminal` as named lemmas, then induct on d.
-  sorry
+  intro d
+  exact Nat.strongRecOn d
+    (motive := fun d => ∀ p, t.depth p ≤ d → t.valueAux d p = t.valueAux (t.depth p) p)
+    (fun d ih p h => by
+      rcases Nat.eq_zero_or_pos d with rfl | hpos
+      · -- d = 0: the depth is 0, both sides are `valueAux 0 p`.
+        have h0 : t.depth p = 0 := Nat.eq_zero_of_le_zero h
+        exact Eq.subst (motive := fun n => t.valueAux 0 p = t.valueAux n p) h0.symm rfl
+      · obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hpos)
+        cases ht : t.terminal p with
+        | true =>
+            -- leaf: both sides are the turn value (`valueAux_terminal`).
+            exact (t.valueAux_terminal (k+1) p ht).trans
+              (t.valueAux_terminal (t.depth p) p ht).symm
+        | false =>
+            have hne : ¬t.terminal p := (Bool.not_eq_true _).mpr ht
+            -- a non-terminal position has positive depth.
+            have hposd : t.depth p ≠ 0 := by
+              intro h0
+              obtain ⟨q, hq⟩ := t.moves_nonterminal p ht
+              exact Nat.not_lt_zero _
+                (Eq.subst (motive := fun n => t.depth q < n) h0 (t.depth_moves p q hq))
+            obtain ⟨e, he⟩ := Nat.exists_eq_succ_of_ne_zero hposd
+            have heqd : e ≤ k := Nat.succ_le_succ_iff.mp
+              (Eq.subst (motive := fun n => n ≤ k+1) he h)
+            -- every child has depth ≤ e ≤ k, so the induction hypothesis
+            -- applies at both cutoffs `k` and `e`.
+            have hchild : ∀ q ∈ t.moves p, t.depth q ≤ e ∧ t.depth q ≤ k := by
+              intro q hq
+              have hlt : t.depth q < e+1 :=
+                Eq.subst (motive := fun n => t.depth q < n) he (t.depth_moves p q hq)
+              exact ⟨Nat.le_of_lt_succ hlt, (Nat.le_of_lt_succ hlt).trans heqd⟩
+            have ihk : ∀ q ∈ t.moves p, t.valueAux k q = t.valueAux (t.depth q) q :=
+              fun q hq => ih k (Nat.lt_succ_self k) q (hchild q hq).2
+            have ihe : ∀ q ∈ t.moves p, t.valueAux e q = t.valueAux (t.depth q) q :=
+              fun q hq => ih e (Nat.lt_of_le_of_lt heqd (Nat.lt_succ_self k)) q (hchild q hq).1
+            cases hturn : t.turn p with
+            | true =>
+                have lhs : t.valueAux (k+1) p = (t.moves p).anyB (t.valueAux k) :=
+                  (t.valueAux_succ k p).trans ((ite_eq_right hne).trans (ite_eq_left hturn))
+                have rhs : t.valueAux (t.depth p) p = (t.moves p).anyB (t.valueAux e) :=
+                  Eq.subst (motive := fun n => t.valueAux n p = (t.moves p).anyB (t.valueAux e))
+                    he.symm ((t.valueAux_succ e p).trans
+                      ((ite_eq_right hne).trans (ite_eq_left hturn)))
+                have c1 : (t.moves p).anyB (t.valueAux k) =
+                    (t.moves p).anyB (fun q => t.valueAux (t.depth q) q) := Finset.anyB_congr ihk
+                have c2 : (t.moves p).anyB (t.valueAux e) =
+                    (t.moves p).anyB (fun q => t.valueAux (t.depth q) q) := Finset.anyB_congr ihe
+                exact lhs.trans (c1.trans (c2.symm.trans rhs.symm))
+            | false =>
+                have hne2 : ¬t.turn p := (Bool.not_eq_true _).mpr hturn
+                have lhs : t.valueAux (k+1) p = (t.moves p).allB (t.valueAux k) :=
+                  (t.valueAux_succ k p).trans ((ite_eq_right hne).trans (ite_eq_right hne2))
+                have rhs : t.valueAux (t.depth p) p = (t.moves p).allB (t.valueAux e) :=
+                  Eq.subst (motive := fun n => t.valueAux n p = (t.moves p).allB (t.valueAux e))
+                    he.symm ((t.valueAux_succ e p).trans
+                      ((ite_eq_right hne).trans (ite_eq_right hne2)))
+                have c1 : (t.moves p).allB (t.valueAux k) =
+                    (t.moves p).allB (fun q => t.valueAux (t.depth q) q) := Finset.allB_congr ihk
+                have c2 : (t.moves p).allB (t.valueAux e) =
+                    (t.moves p).allB (fun q => t.valueAux (t.depth q) q) := Finset.allB_congr ihe
+                exact lhs.trans (c1.trans (c2.symm.trans rhs.symm)))
 
 -- Reference: [Conway], Chapter 0 (minimax/backward induction).
 /-- The defining equation of the value: terminal leaves take the turn value;
@@ -266,31 +328,70 @@ theorem WinLoseTree.value_birthday_one (t : WinLoseTree) (p : t.pos)
     show (t.moves p).anyB t.value = (t.moves p).anyB (fun q => t.turn q) -- justification: Left-to-move node takes the `anyB` branch.
     apply Finset.anyB_congr
     intro q hq
-    -- TEMPORARY SORRY: the honest proof has not been instantiated yet.
-    -- PEELING PLAN: child depth q < depth p = 1 and 0 ≤ depth q give depth q = 0
-    -- (`Nat.le_antisymm`, `Nat.le_of_lt`, `Nat.zero_le`); then
-    -- `depth_zero_terminal` makes the child a leaf and `valueAux_terminal`
-    -- gives value q = turn q.
-    sorry
+    -- the child has depth q < depth p = 1, hence depth q = 0 (`Nat.lt_one_iff`);
+    -- it is a leaf (`depth_zero_terminal`), so its value is its turn.
+    have h0 : t.depth q = 0 := Nat.lt_one_iff.mp
+      (Eq.subst (motive := fun n => t.depth q < n) h (t.depth_moves p q hq))
+    have e1 : t.value q = t.valueAux (t.depth q) q := t.value_eq_valueAux q
+    have e2 : t.valueAux (t.depth q) q = t.valueAux 0 q := congrArg (fun n => t.valueAux n q) h0
+    exact e1.trans (e2.trans (t.valueAux_zero q))
   | false =>
     show (t.moves p).allB t.value = (t.moves p).allB (fun q => t.turn q) -- justification: Right-to-move node takes the `allB` branch.
     apply Finset.allB_congr
     intro q hq
-    -- TEMPORARY SORRY: same peeling plan as the `true` branch above.
-    sorry
+    -- same as the `true` branch: the child is a depth-0 leaf, value q = turn q.
+    have h0 : t.depth q = 0 := Nat.lt_one_iff.mp
+      (Eq.subst (motive := fun n => t.depth q < n) h (t.depth_moves p q hq))
+    have e1 : t.value q = t.valueAux (t.depth q) q := t.value_eq_valueAux q
+    have e2 : t.valueAux (t.depth q) q = t.valueAux 0 q := congrArg (fun n => t.valueAux n q) h0
+    exact e1.trans (e2.trans (t.valueAux_zero q))
 
 -- Reference: [Conway], Chapter 0 (two-ply minimax law).
--- PEELING PLAN: unfold `value_eq` twice; every child has depth ≤ 1 and every
--- grandchild has depth 0, so `value_birthday_one` and `depth_zero_terminal`
--- reduce everything to `anyB`/`allB` of leaf turns.
-/-- **Birthday 2 stratum:** the two-level minimax law — the value at a
-depth-2 Left node is the `anyB` over children of the `allB` over grandchild
-leaf outcomes. -/
+-- REPAIR NOTE: an earlier version of this theorem claimed
+-- `value p = anyB (fun q => (moves q).allB (fun r => turn r))` WITHOUT any
+-- hypothesis on the children's turns. That statement is FALSE: a depth-2 Left
+-- node may have a Left-to-move child `q` (value `q` = `anyB` of grandchild
+-- turns, not `allB`), and a depth-0 child `q` is terminal with
+-- `value q = turn q` while `allB (moves q) _ = true` on the empty move set.
+-- The repaired statement below carries the alternation hypothesis
+-- (`halt : ∀ q ∈ moves p, turn q = false`) and handles terminal children
+-- through their turn.
+-- Reference: [Conway], Chapter 0 (two-ply minimax law).
+/-- **Birthday 2 stratum (repaired):** the two-level minimax law at a depth-2
+Left node whose children are all Right-to-move — the value is the `anyB` over
+children of (the child's terminal turn, or the `allB` over grandchild leaf
+outcomes). -/
 theorem WinLoseTree.value_birthday_two (t : WinLoseTree) (p : t.pos)
-    (h : t.depth p = 2) (hn : t.terminal p = false) (hturn : t.turn p = true) :
-    t.value p = (t.moves p).anyB (fun q => (t.moves q).allB (fun r => t.turn r)) := by
-  -- TEMPORARY SORRY: the honest proof has not been instantiated yet.
-  -- PEELING PLAN: see the comment above the statement.
-  sorry
+    (h : t.depth p = 2) (hn : t.terminal p = false) (hturn : t.turn p = true)
+    (halt : ∀ q ∈ t.moves p, t.turn q = false) :
+    t.value p = (t.moves p).anyB (fun q =>
+      if t.terminal q then t.turn q else (t.moves q).allB (fun r => t.turn r)) := by
+  have hne : ¬t.terminal p := (Bool.not_eq_true _).mpr hn
+  have hval : t.value p = (t.moves p).anyB t.value :=
+    (t.value_eq p).trans ((ite_eq_right hne).trans (ite_eq_left hturn))
+  have hchild : ∀ q ∈ t.moves p, t.value q =
+      (if t.terminal q then t.turn q else (t.moves q).allB (fun r => t.turn r)) := by
+    intro q hq
+    have hlt : t.depth q < 2 :=
+      Eq.subst (motive := fun n => t.depth q < n) h (t.depth_moves p q hq)
+    have hle : t.depth q ≤ 1 := Nat.lt_succ_iff.mp hlt
+    cases htq : t.terminal q with
+    | true =>
+        show t.value q = t.turn q
+        exact (t.value_eq q).trans (ite_eq_left htq)
+    | false =>
+        show t.value q = (t.moves q).allB (fun r => t.turn r)
+        have hne2 : ¬t.terminal q := (Bool.not_eq_true _).mpr htq
+        have hne3 : ¬t.turn q := (Bool.not_eq_true _).mpr (halt q hq)
+        have hv : t.value q = (t.moves q).allB t.value :=
+          (t.value_eq q).trans ((ite_eq_right hne2).trans (ite_eq_right hne3))
+        have hgc : ∀ r ∈ t.moves q, t.value r = t.turn r := by
+          intro r hr
+          have hlt2 : t.depth r < 1 :=
+            Nat.lt_of_lt_of_le (t.depth_moves q r hr) hle
+          have h0 : t.depth r = 0 := Nat.lt_one_iff.mp hlt2
+          exact ((t.value_eq r).trans (ite_eq_left (t.depth_zero_terminal r h0)))
+        exact hv.trans (Finset.allB_congr hgc)
+  exact hval.trans (Finset.anyB_congr hchild)
 
 end BoringLab

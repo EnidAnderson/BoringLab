@@ -357,24 +357,60 @@ theorem likenessDist_spread : likenessDist vPredict coinOutcomes .spread .truth 
         ((congrArg (fun z => (1/2 : ℚ) + z) (add_zero (1/2 : ℚ))).trans
           (add_halves (1 : ℚ)))))
 
--- Reference: ticket #33, item (d) — the combined-measure axioms on bounded
--- families (the full measure-theoretic program of [Niiniluoto 1987] is
--- deferred).
--- TEMPORARY SORRY: the honest proof has not been instantiated yet.
--- PEELING PLAN: check the axioms (reflexivity `verisimilarLE_refl` proved
--- above; the distance symmetry and triangle inequality on the bounded
--- family by closed computation per family; the content/likeness comparison
--- rows) as named lemmas `likenessDist_symm`, `likenessDist_triangle` on the
--- toy family, then generalize to arbitrary finite outcome spaces by
--- induction on `outcomes`.
+-- Reference: [Niiniluoto 1987] — `likenessDist_pair` + `sub_half`/`abs_of_pos`/
+-- `neg_sub`/`sub_zero`/`abs_neg`/`add_zero`/`add_halves` on `ℚ`:
+-- `|1 - 1/2| + |0 - 1/2| = 1/2 + 1/2 = 1`.
+/-- The truth is at likeness distance `1` from the spread hypothesis. -/
+theorem likenessDist_truth_spread : likenessDist vPredict coinOutcomes .truth .spread = 1 := by
+  have h := likenessDist_pair vPredict .truth .spread Coin.heads Coin.tails 1 0 (1/2) (1/2)
+    vMass_truth_heads vMass_truth_tails vMass_spread_heads vMass_spread_tails
+  have hpos : (0 : ℚ) < 1/2 := div_pos one_pos (Nat.cast_pos.mpr (Nat.succ_pos 1))
+  have e1 : |(1 : ℚ) - 1/2| = 1/2 := (congrArg abs (sub_half (1 : ℚ))).trans (abs_of_pos hpos)
+  have e2 : |(0 : ℚ) - 1/2| = 1/2 :=
+    ((congrArg abs ((neg_sub (1/2 : ℚ) 0).symm.trans
+        (congrArg (fun x => -x) (sub_zero (1/2 : ℚ)))))).trans
+      ((abs_neg (1/2 : ℚ)).trans (abs_of_pos hpos))
+  exact h.trans
+    ((congrArg (fun x => x + (|(0 : ℚ) - 1/2| + 0)) e1).trans
+      ((congrArg (fun y => (1/2 : ℚ) + (y + 0)) e2).trans
+        ((congrArg (fun z => (1/2 : ℚ) + z) (add_zero (1/2 : ℚ))).trans
+          (add_halves (1 : ℚ)))))
+
+-- Reference: [Niiniluoto 1987] — `likenessDist_pair` + `neg_sub`/`sub_zero`/
+-- `abs_neg`/`abs_one`/`add_zero`/`one_add_one_eq_two` on `ℚ`:
+-- `|0 - 1| + |1 - 0| = 1 + 1 = 2`.
+/-- The opposite hypothesis is at likeness distance `2` from the truth. -/
+theorem likenessDist_opposite_truth : likenessDist vPredict coinOutcomes .opposite .truth = 2 := by
+  have h := likenessDist_pair vPredict .opposite .truth Coin.heads Coin.tails 0 1 1 0
+    vMass_opposite_heads vMass_opposite_tails vMass_truth_heads vMass_truth_tails
+  have e1 : |(0 : ℚ) - 1| = 1 :=
+    ((congrArg abs ((neg_sub (1 : ℚ) 0).symm.trans
+        (congrArg (fun x => -x) (sub_zero (1 : ℚ))))).trans
+      ((abs_neg (1 : ℚ)).trans abs_one))
+  have e2 : |(1 : ℚ) - 0| = 1 := (congrArg abs (sub_zero (1 : ℚ))).trans abs_one
+  exact h.trans
+    ((congrArg (fun x => x + (|(1 : ℚ) - 0| + 0)) e1).trans
+      ((congrArg (fun y => (1 : ℚ) + (y + 0)) e2).trans
+        ((congrArg (fun z => (1 : ℚ) + z) (add_zero (1 : ℚ))).trans
+          one_add_one_eq_two)))
+
+-- Reference: ticket #33, item (d) — the combined-measure axioms on the
+-- bounded toy family, proved by the peeled closed computations above:
+-- `likenessDist_self` (reflexivity), `likenessDist_spread` +
+-- `likenessDist_truth_spread` (symmetry on the pair), and
+-- `likenessDist_opposite_truth` (the opposite cell at distance `2`).
+-- The general triangle inequality on arbitrary finite outcome spaces remains
+-- the deferred measure-theoretic program of [Niiniluoto 1987] (named hole
+-- `likenessDist_triangle`, induction on `outcomes`).
 /-- The likeness-distance axioms hold on the bounded toy family (the
-measure-theoretic program's shadow). -/
+measure-theoretic program's shadow) (proved). -/
 theorem likeness_axioms_toy :
     likenessDist vPredict coinOutcomes .truth .truth = 0 ∧
     likenessDist vPredict coinOutcomes .spread .truth =
       likenessDist vPredict coinOutcomes .truth .spread ∧
-    likenessDist vPredict coinOutcomes .opposite .truth = 2 := by
-  sorry
+    likenessDist vPredict coinOutcomes .opposite .truth = 2 :=
+  ⟨likenessDist_self, likenessDist_spread.trans likenessDist_truth_spread.symm,
+    likenessDist_opposite_truth⟩
 
 -- Reference: ticket #33, acceptance: `#eval` prints the content sets and
 -- the likeness distances of the toy family.

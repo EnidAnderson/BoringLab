@@ -5,6 +5,8 @@ Authors: Enid
 -/
 import BoringLab.Epistemology.Process
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # Identification in the limit: reliability as data
@@ -249,22 +251,97 @@ def mindChangesOn {hyp datum : Type} [DecidableEq hyp] (M : List datum → hyp)
   ((List.range (s.length + 1)).filter fun n =>
     if M (s.take n) = M (s.take (n + 1)) then false else true).length
 
+-- Reference: core `List.filter_congr`, `List.length_take`, `List.take_of_length_le`,
+-- `List.take_length`; ticket #31 item (d) — `mindChangesOn M s` depends only on
+-- the values of `M` on the prefixes `s.take i`.
+/-- The mind-change count depends only on the outputs on the prefixes of `s`. -/
+theorem mindChangesOn_eq_of_forall_take {hyp datum : Type} [DecidableEq hyp]
+    (M M' : List datum → hyp) (s : List datum)
+    (h : ∀ i : ℕ, M (s.take i) = M' (s.take i)) :
+    mindChangesOn M s = mindChangesOn M' s := by
+  change (((List.range (s.length + 1)).filter fun n =>
+      if M (s.take n) = M (s.take (n + 1)) then false else true)).length
+    = (((List.range (s.length + 1)).filter fun n =>
+      if M' (s.take n) = M' (s.take (n + 1)) then false else true)).length
+  refine congrArg List.length (List.filter_congr fun n _ => ?_)
+  rcases Decidable.em (M (s.take n) = M (s.take (n + 1))) with hpos | hneg
+  · rcases Decidable.em (M' (s.take n) = M' (s.take (n + 1))) with hpos' | hneg'
+    · exact (ite_eq_left hpos).trans (ite_eq_left hpos').symm
+    · exact absurd (((h n).symm.trans hpos).trans (h (n + 1))) hneg'
+  · rcases Decidable.em (M' (s.take n) = M' (s.take (n + 1))) with hpos' | hneg'
+    · exact absurd ((h n).trans (hpos'.trans (h (n + 1)).symm)) hneg
+    · exact (ite_eq_right hneg).trans (ite_eq_right hneg').symm
+
+set_option linter.unusedVariables false in
+-- Reference: ticket #31 item (d); a computable extension of a prefix-tuple to a
+-- learner (on `s.take i` the length is `min i s.length = i` for `i ≤ s.length`,
+-- and `s.take i = s` beyond that).
+/-- The learner extending a tuple of outputs on the prefixes of `s` (off the
+prefixes it reads the tuple at `min p.length s.length`). -/
+def tupleLearner {hyp datum : Type} (s : List datum) (dflt : hyp)
+    (f : Fin (s.length + 1) → hyp) : List datum → hyp :=
+  fun p => f ⟨min p.length s.length, Nat.lt_succ_of_le (Nat.min_le_right p.length s.length)⟩
+
+-- Reference: `List.length_take`, `Nat.min_eq_left`, `Fin.ext`; computation step.
+/-- The tuple learner agrees with its tuple on every prefix of `s`. -/
+theorem tupleLearner_take {hyp datum : Type} (s : List datum) (dflt : hyp)
+    (f : Fin (s.length + 1) → hyp) (i : ℕ) (hi : i ≤ s.length) :
+    tupleLearner s dflt f (s.take i) = f ⟨i, Nat.lt_succ_of_le hi⟩ := by
+  change f ⟨min (s.take i).length s.length, _⟩ = f ⟨i, Nat.lt_succ_of_le hi⟩
+  apply congrArg f
+  apply Fin.ext
+  have hlen : (s.take i).length = i :=
+    Eq.trans (List.length_take (i := i) (l := s)) (Nat.min_eq_left hi)
+  exact (congrArg (fun l => min l s.length) hlen).trans (Nat.min_eq_left hi)
+
+-- Reference: `tupleLearner_take`, `List.take_of_length_le`, `List.take_length`,
+-- `Nat.lt_trichotomy`; every prefix of `s` (including `s` itself) is read off the
+-- tuple.
+/-- Any learner agrees with the tuple learner built from its own prefix outputs,
+on every prefix of `s`. -/
+theorem tupleLearner_agree_take {hyp datum : Type} (s : List datum) (dflt : hyp)
+    (M' : List datum → hyp) (i : ℕ) :
+    M' (s.take i) = tupleLearner s dflt (fun j => M' (s.take j.val)) (s.take i) := by
+  rcases Nat.lt_trichotomy i s.length with hlt | heq | hgt
+  · exact (tupleLearner_take s dflt (fun j => M' (s.take j.val)) i (Nat.le_of_lt hlt)).symm
+  · exact (tupleLearner_take s dflt (fun j => M' (s.take j.val)) i (Nat.le_of_eq heq)).symm
+  · have h1 : s.take i = s := List.take_of_length_le (Nat.le_of_lt hgt)
+    have h2 : s.take s.length = s := List.take_length
+    have ht : tupleLearner s dflt (fun j => M' (s.take j.val)) (s.take s.length)
+        = M' (s.take s.length) :=
+      tupleLearner_take s dflt (fun j => M' (s.take j.val)) s.length (Nat.le_refl s.length)
+    have h3 : tupleLearner s dflt (fun j => M' (s.take j.val)) s = M' (s.take s.length) :=
+      Eq.subst (motive := fun p => tupleLearner s dflt (fun j => M' (s.take j.val)) p
+        = M' (s.take s.length)) h2 ht
+    have h4 : M' s = tupleLearner s dflt (fun j => M' (s.take j.val)) s :=
+      (congrArg M' h2.symm).trans h3.symm
+    exact Eq.subst (motive := fun p => M' p = tupleLearner s dflt (fun j => M' (s.take j.val)) p)
+      h1.symm h4
+
+set_option linter.unusedFintypeInType false in
+set_option linter.unusedDecidableInType false in
 -- Reference: ticket #31, item (d) — the conservative method (fewest mind
 -- changes) exists on bounded carriers by enumeration over the finitely many
--- output tuples on the prefixes of a fixed schedule.
--- TEMPORARY SORRY: the honest proof has not been instantiated yet.
--- PEELING PLAN: over `[Fintype hyp]`, the outputs on the `s.length + 1`
--- prefixes form a `Fin (s.length+1) → hyp` tuple; `Finset.exists_min_image`
--- on `Finset.univ` picks a minimizing tuple; extend it to a learner `M` off
--- the prefixes by a default; `mindChangesOn` depends only on the tuple.
--- Next named lemmas: `mindChangesOn_eq_of_prefixes`, `prefixes_fintype`.
+-- output tuples on the prefixes of a fixed schedule: `Set.exists_min_image` on
+-- the finite `univ` of tuples, extended by `tupleLearner`.
+-- REPAIR note: `[Nonempty hyp]` added — for empty `hyp` no learner exists and the
+-- statement is false (same class of repair as #285).
 /-- The **conservative method exists** on bounded carriers: for every finite
 schedule there is a learner minimizing the mind-change count on it. -/
-theorem exists_conservative_method {hyp datum : Type} [Fintype hyp] [DecidableEq hyp]
-    [DecidableEq datum] (s : List datum) :
+theorem exists_conservative_method {hyp datum : Type} [Fintype hyp] [Nonempty hyp]
+    [DecidableEq hyp] [DecidableEq datum] (s : List datum) :
     ∃ M : List datum → hyp, ∀ M' : List datum → hyp,
       mindChangesOn M s ≤ mindChangesOn M' s := by
-  sorry
+  obtain ⟨dflt⟩ := (inferInstance : Nonempty hyp)
+  haveI : Finite (Fin (s.length + 1) → hyp) := inferInstance
+  obtain ⟨t, _, ht⟩ := Set.exists_min_image
+    (Set.univ : Set (Fin (s.length + 1) → hyp))
+    (fun f => mindChangesOn (tupleLearner s dflt f) s)
+    (Set.finite_univ) ⟨fun _ => dflt, Set.mem_univ _⟩
+  refine ⟨tupleLearner s dflt t, fun M' => ?_⟩
+  exact (ht (fun j => M' (s.take j.val)) (Set.mem_univ _)).trans
+    (mindChangesOn_eq_of_forall_take (tupleLearner s dflt (fun j => M' (s.take j.val))) M' s
+      (fun i => (tupleLearner_agree_take s dflt M' i).symm)).le
 
 -- Reference: ticket #31, item (c) — the general finite-family statement.
 -- TEMPORARY SORRY: the honest proof has not been instantiated yet.

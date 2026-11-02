@@ -182,6 +182,53 @@ theorem RegimeMap.comp_levelMap {α : Type} (M : AddCarrier) {R S T : Regime α}
     (f : RegimeMap α M R S) (g : RegimeMap α M S T) (n : ℕ) :
     (f.comp M g).levelMap n = g.levelMap (f.levelMap n) := rfl
 
+-- Reference: computation step of `RegimeMap.comp` (data part); `rfl` only in
+-- this primitive definitional lemma.
+/-- The composite's data map is the composed data map. -/
+theorem RegimeMap.comp_dataMap {α : Type} (M : AddCarrier) {R S T : Regime α}
+    (f : RegimeMap α M R S) (g : RegimeMap α M S T) (n : ℕ) (l : List α) :
+    (f.comp M g).dataMap n l = g.dataMap (f.levelMap n) (f.dataMap n l) := rfl
+
+-- Reference: computation step of `RegimeMap.comp` (remainder part); `rfl` only
+-- in this primitive definitional lemma.
+/-- The composite's remainder map is the composed remainder map. -/
+theorem RegimeMap.comp_remainderMap {α : Type} (M : AddCarrier) {R S T : Regime α}
+    (f : RegimeMap α M R S) (g : RegimeMap α M S T) (n : ℕ)
+    (r : (R.trunc n).remainderCarrier) :
+    (f.comp M g).remainderMap n r =
+      g.remainderMap (f.levelMap n) (f.remainderMap n r) := rfl
+
+-- Reference: structure extensionality for `RegimeMap`, stated in the
+-- transport-free form: if the level maps agree (as functions), the data and
+-- transfer maps agree pointwise, and the remainder maps agree after
+-- transporting along the level-map equality (`Eq.subst` on the level), then
+-- the two maps are equal; the `law` field is a `Prop`, so proof irrelevance
+-- closes the final step (cf. `AddCarrier.eta`/`Regime.eta`).
+/-- Two regime maps whose data fields agree (remainder map up to the
+level-map transport) are equal. -/
+theorem RegimeMap.ext {α : Type} {M : AddCarrier} {R S : Regime α} {f g : RegimeMap α M R S}
+    (hl : f.levelMap = g.levelMap)
+    (hd : ∀ n l, f.dataMap n l = g.dataMap n l)
+    (hr : ∀ n (r : (R.trunc n).remainderCarrier),
+      cast (congrArg (fun m => (S.trunc m).remainderCarrier) (congrFun hl n))
+        (f.remainderMap n r) = g.remainderMap n r)
+    (ht : ∀ n, f.transferTerm n = g.transferTerm n) : f = g := by
+  revert hl hd hr ht
+  cases f with | mk fl fd fr ft fLaw =>
+  cases g with | mk gl gd gr gt gLaw =>
+  intro hl hd hr ht
+  have e1 : fl = gl := hl
+  subst e1
+  have e2 : fd = gd := funext fun n => funext (hd n)
+  subst e2
+  -- after the level-map substitution, the transported remainder equality is
+  -- definitionally `fr n r = gr n r` (proof irrelevance of `congrFun hl n`).
+  have e3 : fr = gr := funext fun n => funext fun r => hr n r
+  subst e3
+  have e4 : ft = gt := funext ht
+  subst e4
+  rfl
+
 -- Reference: ticket #64, "the transfer-term cocycle law ... associativity of
 -- composition IS this cocycle identity": the two triple compositions of
 -- transfer terms agree by the carrier's associativity (`M.add_assoc`).
@@ -213,19 +260,30 @@ way (over the carrier `M`). -/
 def RegimeIncomparable (α : Type) (M : AddCarrier) (R S : Regime α) : Prop :=
   ¬ Nonempty (RegimeMap α M R S) ∧ ¬ Nonempty (RegimeMap α M S R)
 
--- Reference: ticket #64; the full associativity of the content-transport
--- law (the Prop field) — proof-irrelevant once the data cocycle and the
--- regime coherence hold.
--- TEMPORARY SORRY: the honest proof has not been instantiated yet.
--- PEELING PLAN: `Regime.remContent_remainderMap` (regime coherence), then
--- the `law` fields compose by `f.law`/`g.law`/`h.law` chains; the `law`
--- fields are `Prop`, so structure equality closes by proof irrelevance
--- once the data fields agree (`funext` on the maps).
-/-- The full cocycle law: the two composite regime maps agree. -/
+-- Reference: ticket #64; the full associativity of regime-map composition:
+-- the data fields agree by the peeled computation lemmas
+-- (`comp_levelMap`/`comp_dataMap`/`comp_remainderMap`) and the additive
+-- cocycle (`comp_assoc_transferTerm`); the `law` fields are `Prop`, so
+-- structure equality closes by proof irrelevance via `RegimeMap.ext`.
+/-- The full cocycle law: the two composite regime maps agree (proved). -/
 theorem RegimeMap.comp_law_assoc {α : Type} (M : AddCarrier) {R S T U : Regime α}
     (f : RegimeMap α M R S) (g : RegimeMap α M S T) (h : RegimeMap α M T U) :
     (f.comp M g).comp M h = f.comp M (g.comp M h) := by
-  sorry
+  refine RegimeMap.ext ?hl ?hd ?hr ?ht
+  · -- level maps: both sides reduce to `h.levelMap (g.levelMap (f.levelMap n))`.
+    exact funext fun n => RegimeMap.comp_levelMap M (f.comp M g) h n
+  · -- data maps: both sides reduce to
+    -- `h.dataMap (g.levelMap (f.levelMap n)) (g.dataMap (f.levelMap n) (f.dataMap n l))`.
+    intro n l
+    exact RegimeMap.comp_dataMap M (f.comp M g) h n l
+  · -- remainder maps: both sides reduce to the same composed remainder map
+    -- (the level-map transport in `ext`'s hypothesis is the identity up to
+    -- proof irrelevance, since the two level maps are definitionally equal).
+    intro n r
+    exact RegimeMap.comp_remainderMap M (f.comp M g) h n r
+  · -- transfer terms: exactly the additive cocycle law.
+    intro n
+    exact RegimeMap.comp_assoc_transferTerm M f g h n
 
 /-! ## Instances: the regimes of #41 -/
 
