@@ -5,6 +5,7 @@ Authors: Enid
 -/
 import BoringLab.Doctrine.Geometric
 import BoringLab.Doctrine.Morph
+import BoringLab.Doctrine.Semicat
 
 /-!
 # LAB META.0: the doctrine of doctrines (the reprogrammable Lisp), 1-skeleton
@@ -82,20 +83,28 @@ def DoctrineMorph.comp {d d' d'' : Doctrine.{u}} (f : DoctrineMorph d d')
         (Computad.Morph.mapPath_comp_morph f.morph g.morph q).symm
         (g.preservesMoves (f.morph.mapPath p) (f.morph.mapPath q) (f.preservesMoves p q h)))
 
--- Reference: ticket #72 — associativity of 1-cell composition.
--- TEMPORARY SORRY: the honest proof needs extensionality for
--- `Computad.Morph` (funext on the maps + proof irrelevance on the laws),
--- mirroring `RegimeMap.ext'` in `BoringLab.Epistemology.RegimeCocycle`.
--- PEELING PLAN: named lemma `Computad.Morph.ext` (portMap/objMap by
--- funext; genMap pointwise; the four law fields by proof irrelevance),
--- then `DoctrineMorph.comp_assoc` by `cases` + `Morph.ext`.
+-- Reference: proof irrelevance on the `preservesMoves` field;
+-- `cases` + `Eq.subst` along the morph equality.
+/-- **Extensionality for doctrine morphisms**: equal underlying computad
+morphisms give equal doctrine morphisms (the preservation field is a
+proof). -/
+theorem DoctrineMorph.ext {d d' : Doctrine.{u}} {f g : DoctrineMorph d d'}
+    (h : f.morph = g.morph) : f = g := by
+  cases f with | mk m1 p1 =>
+  cases g with | mk m2 p2 =>
+  subst h
+  exact rfl
+
+-- Reference: ticket #72 — associativity of 1-cell composition:
+-- `Computad.Morph.comp_assoc` on the underlying polygraph morphisms +
+-- `DoctrineMorph.ext` (the preservation fields are proofs).
 /-- Associativity of doctrine-morphism composition. -/
 theorem DoctrineMorph.comp_assoc {d d' d'' d''' : Doctrine.{u}}
     (f : DoctrineMorph d d') (g : DoctrineMorph d' d'')
     (h : DoctrineMorph d'' d''') :
     DoctrineMorph.comp (DoctrineMorph.comp f g) h =
-      DoctrineMorph.comp f (DoctrineMorph.comp g h) := by
-  sorry
+      DoctrineMorph.comp f (DoctrineMorph.comp g h) :=
+  DoctrineMorph.ext (Computad.Morph.comp_assoc f.morph g.morph h.morph)
 
 /-! ## 2-cells: presentation rewrites -/
 
