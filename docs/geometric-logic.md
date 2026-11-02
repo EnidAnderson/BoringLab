@@ -79,6 +79,24 @@ Beck–Chevalley/quantifier laws are the named next holes (peeling plan: state
 them as additional `Prop` fields on `Hyperdoctrine`, then prove them for the
 toy misère instance by enumeration on bounded games).
 
+## Follow-on instances (same branch)
+
+* `BoringLab/Doctrine/Nim.lean` — normal-play Nim as a geometric theory
+  (ticket #14 item (iii)): `nimComputad` (positions `ℕ`, legal removals as
+  generators, addition-only typing), `nimDoctrine` (commutation of two
+  removals as the declared sequent), `nim_commute_witness` (at `5, k=2,
+  j=1`), `nim_commute_inverted`, `nimCommuteSequent`.
+* `BoringLab/Doctrine/NimHyperdoctrine.lean` — the first fully proved
+  `Hyperdoctrine` instance (`nimHyperdoctrine`): one-scope base `nimScope`,
+  fiber = the Nim doctrine, identity substitution, `∃ = ∀ = id` on root
+  endo-paths; adjunctions proved by `mapPath_id`;
+  `nimHyperdoctrine_commute_transport`.
+* `BoringLab/Lisp/` + `docs/lisp-macros.md` — the LAB LISP line (ticket #68):
+  On Lisp macros as computadic rewriting (functions as 1-cells, macros as
+  declared moves), the Common Lisp function/macro distinction as data.
+* `BoringLab/Epistemology/Learning.lean`, `BoringLab/Epistemology/Kuhn.lean` —
+  EPI.3.1 (#31) and EPI.5.1 (#34).
+
 ## Companion epistemology build (same session, EPI line)
 
 `BoringLab/Epistemology/Process.lean` (ticket #29, EPI.1.2, on the #28
