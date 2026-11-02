@@ -1,0 +1,3 @@
+trivialDoctrine : PhysicalDoctrine
+classicalDoctrine : PhysicalDoctrine
+EXIT=0

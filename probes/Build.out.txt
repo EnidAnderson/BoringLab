@@ -1,0 +1,17 @@
+⚠ [3243/3243] Built BoringLab.Physical.PhysicalDoctrine (25s)
+warning: BoringLab/Physical/PhysicalDoctrine.lean:196:2: The `show` tactic should only be used to indicate intermediate goal states for readability.
+However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
+
+Note: This linter can be disabled with `set_option linter.style.show false`
+warning: BoringLab/Physical/PhysicalDoctrine.lean:217:4: The `show` tactic should only be used to indicate intermediate goal states for readability.
+However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
+
+Note: This linter can be disabled with `set_option linter.style.show false`
+warning: BoringLab/Physical/PhysicalDoctrine.lean:295:100: This line exceeds the 100 character limit, please shorten it!
+
+Note: This linter can be disabled with `set_option linter.style.longLine false`
+warning: BoringLab/Physical/PhysicalDoctrine.lean:301:100: This line exceeds the 100 character limit, please shorten it!
+
+Note: This linter can be disabled with `set_option linter.style.longLine false`
+Build completed successfully (3243 jobs).
+EXIT=0

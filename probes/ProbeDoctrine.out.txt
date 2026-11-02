@@ -1,0 +1,54 @@
+probes/ProbeDoctrine.lean:6:0: warning: 
+'Mathlib.Data.NNReal.Defs' has been deprecated: please replace this import by
+
+import Mathlib.Basic.NNReal.Defs
+IsOrderedMonoid : (α : Type u_1) → [CommMonoid α] → [Preorder α] → Prop
+Nat.instCommMonoid
+Nat.instPreorder
+LinearOrderedCommMonoidWithZero.toIsOrderedMonoid
+NNReal.instCommSemiring.toCommMonoid
+NNReal.instPartialOrder.toPreorder
+LinearOrderedCommMonoidWithZero.toIsOrderedMonoid
+GrothendieckTopology.trivial : (C : Type u_2) → [inst : Category.{u_1, u_2} C] → GrothendieckTopology C
+@GrothendieckTopology.toCoverage : {C : Type u_2} → [inst : Category.{u_1, u_2} C] → GrothendieckTopology C → Coverage C
+discreteCategory PUnit.{?u.3 + 1}
+MeasCat.instLargeCategory
+Coverage : (C : Type u_2) → [Category.{u_1, u_2} C] → Type (max u_2 u_1)
+(GrothendieckTopology.trivial (Discrete PUnit.{u_1 + 1})).toCoverage : Coverage (Discrete PUnit.{u_1 + 1})
+PUnit.commGroup.toGroup
+Monoid.toMulAction PUnit.{?u.2 + 1}
+MulAction.fixedPoints : (M : Type u_1) → (α : Type u_2) → [inst : Monoid M] → [MulAction M α] → Set α
+Equiv.Perm.permGroup
+Functor.const : (J : Type u_3) →
+  [inst : Category.{u_1, u_3} J] → {C : Type u_4} → [inst_1 : Category.{u_2, u_4} C] → C ⥤ J ⥤ C
+discreteCategory (Fin 2)
+MeasCat.of : (carrier : Type u_1) → [str : MeasurableSpace carrier] → MeasCat
+PUnit.instMeasurableSpace
+ProbabilityMeasure : (Ω : Type u_1) → [MeasurableSpace Ω] → Type u_1
+@Measure.dirac.isProbabilityMeasure : ∀ {α : Type u_1} [inst : MeasurableSpace α] {x : α},
+  IsProbabilityMeasure (Measure.dirac x)
+@InformationTheory.klDiv : {α : Type u_1} → {mα : MeasurableSpace α} → Measure α → Measure α → ENNReal
+@InformationTheory.klDiv_self : ∀ {α : Type u_1} {mα : MeasurableSpace α} (μ : Measure α) [SigmaFinite μ],
+  InformationTheory.klDiv μ μ = 0
+@InformationTheory.klDiv_eq_zero_iff : ∀ {α : Type u_1} {mα : MeasurableSpace α} {μ ν : Measure α} [IsFiniteMeasure μ]
+  [IsFiniteMeasure ν], InformationTheory.klDiv μ ν = 0 ↔ μ = ν
+@Discrete.Hom.eq : ∀ {α : Type u_1} {a b : α} (self : Discrete.Hom a b), a = b
+@Fin.forall_fin_two : ∀ {p : Fin 2 → Prop}, (∀ (i : Fin 2), p i) ↔ p 0 ∧ p 1
+@Equiv.swap_apply_left : ∀ {α : Sort u_1} [inst : DecidableEq α] (a b : α), (Equiv.swap a b) a = b
+@Equiv.swap_apply_right : ∀ {α : Sort u_1} [inst : DecidableEq α] (a b : α), (Equiv.swap a b) b = a
+@Equiv.Perm.permGroup : {α : Type u_1} → Group (Equiv.Perm α)
+Fin.zero_ne_one' : 0 ≠ 1
+@Set.ext : ∀ {α : Type u_1} {a b : Set α}, (∀ (x : α), x ∈ a ↔ x ∈ b) → a = b
+probes/ProbeDoctrine.lean:53:8: warning: `Set.mem_setOf_eq` has been deprecated: Use `Set.mem_ofPred_eq` instead
+
+Hint: Replace the deprecated name:
+  S̵e̵t̵.̵m̵e̵m̵_̵s̵e̵t̵O̵f̵_̵e̵q̵S̲e̲t̲.̲m̲e̲m̲_̲o̲f̲P̲r̲e̲d̲_̲e̲q̲
+@Set.mem_setOf_eq : ∀ {α : Type u_1} {x : α} {p : α → Prop}, (x ∈ {y | p y}) = p x
+@Equiv.Perm.mul_apply : ∀ {α : Type u_1} (f g : Equiv.Perm α) (x : α), (f * g) x = f (g x)
+@Equiv.Perm.one_apply : ∀ {α : Type u_1} (x : α), 1 x = x
+@Subsingleton.elim : ∀ {α : Sort u_1} [h : Subsingleton α] (a b : α), a = b
+TestPD.mk : (sys : Type u_1) →
+  [sysCat : Category.{u_2, u_1} sys] →
+    sys →
+      (res : Type u_3) → [resCM : CommMonoid res] → [resPre : Preorder res] → [resOrd : IsOrderedMonoid res] → TestPD
+EXIT=0
