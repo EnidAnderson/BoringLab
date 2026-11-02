@@ -388,3 +388,11 @@ are its pi0-components (observability = port words, #107). Filed:
 
 Discipline upgraded: `docs/polygraph-first.md` (supersedes
 `docs/computad-first.md`); LAB META.1 #134 retitled polygraph-first.
+
+- `Games/Order.lean` (#82/#81): `TGame.leftFirst`, `TGame.le` (G ≤ H iff Left
+  does not win first in G + (-H)), `TGame.eq`; cast-transport lemmas; the
+  fundamental theorem `TGame.add_neg` and `le_refl` stated at full generality
+  with peeling plans (mirror-response + fin_addCases coverage).
+- `Games/Kind.lean` (#147): `GameKind` moduli data + instances.
+- `fin_addCases_forall` (#84 peel): coverage of `Fin (l+r)` by
+  `Fin.castAdd`/`Fin.natAdd`, proved.

@@ -194,4 +194,15 @@ theorem TGame.zero_add (n : ℕ) (g : TGame n) :
   -- on both sides and `funext` on the families.
   sorry
 
+
+-- Reference: standard (coverage of `Fin (l + r)` by `Fin.castAdd`/`Fin.natAdd`,
+-- via `Fin.addCases` as eliminator — peeling step for `TGame.add_comm` and
+-- `TGame.add_neg`).
+/-- **`Fin.addCases` is a coverage**: to prove `P i` for all `i : Fin (l + r)`,
+it suffices to prove it on the `Fin.castAdd r` and `Fin.natAdd l` parts. -/
+theorem fin_addCases_forall {l r : ℕ} {P : Fin (l + r) → Prop}
+    (hL : ∀ i : Fin l, P (Fin.castAdd r i)) (hR : ∀ j : Fin r, P (Fin.natAdd l j)) :
+    ∀ i : Fin (l + r), P i :=
+  fun i => Fin.addCases hL hR i
+
 end BoringLab
