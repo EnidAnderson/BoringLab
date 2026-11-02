@@ -251,6 +251,17 @@ hypothesis-carriers only, no `axiom` declarations) records the dictionary:
   of `Games/Basic.lean` is the lab substrate until supersession at wiring.
 - Lab epistemics: no unit tests — small cases are proven theorems; negative
   results are first-class deliverables; no-woo gate ([K]/[S]/[O] tags).
+- POLYGRAPH-FIRST DISCIPLINE (see `docs/polygraph-first.md`, proposed for the
+  LAB.0 charter #22 via #134, retitled): polygraphs (higher computads)
+  generalize computads, so every theorem is stated at the HIGHEST class of
+  polygraph it applies to — 1-computads when the statement lives at dimension
+  1 (`GradedGameComputad.win_equation` in `Games/Graded.lean`), 2-polygraphs
+  for relations between parallel paths (`Doctrine.move` = 2-cells; imperfect-
+  info observational equivalences, info sets = pi0 of the path complex,
+  #149/#153), 3-polygraphs for coherences (regime cocycle #64/#102, Beck-
+  Chevalley #71, #154); localization = homotopy quotient; no category/set/
+  infinity-category catch-alls at pin; ports carry the mover/initiative/
+  time (Tate) typing at every dimension.
 - Ticket naming: `L.<layer>.<n>` continuing L.1.1 (#20), L.1.2 (#21),
   L.2.1 (#52), L.3.1 (#56), L.4.1 (#63); label `work-order` (+ `lab-tree` for
   bridge nodes); bodies carry Line/node, gates, depth, scope contract, tags,
@@ -315,3 +326,65 @@ nodes also `lab-tree`), continuing the L-line:
   #100 L.15.1 computad pre-wiring (`toComputad`/`toDoctrine` everywhere; A2.0
   #3 / A2.1 #8 / GL.0 #14); #101 L.16.1 motive bridge statement layer (U.0
   #12, RAD.0 #11, C3.0 #13, V.0 #5; WISH W2/W6; BoringMath C/T/K lines).
+
+## 14. Frontier explored 2026-11-01: games as the organizing principle (tickets #142-#151)
+
+Structural connections noticed while reading BoringMath/BoringLab, filed as
+tickets (all lab-tree where they bridge):
+
+- **The Conway motive of a game** (#143 L.17.1): the triple (K0-class in U
+  #12, play-line complex #11, temperature #96) as a motive-shaped shadow in
+  the games fiber — the Nori x Conway frame's finite door.
+- **Plays as finite correspondences** (#145 L.17.2): the play-line complex
+  `Lines ⊂ P × ∂P` is exactly a finite-correspondence shape (formal cycle on
+  a product, BoringMath `Correspondence/Finite.lean` C.1); Rad/Back of #11
+  are the graph-correspondence pushforward/pullback shapes.
+- **A1-homotopy of plays** (#142 L.17.3): the time grading (Tate = time,
+  #105/#107) as the A1 parameter of `Motives/A1.lean` (C.4 #117); value =
+  A1-localization of the play correspondence; cooling = the cold heart (W6).
+- **Chow = value** (#144 L.17.4): one shared pattern `K0Quotient` — Chow
+  A_*(X) = K0(cycles/rational eq) (#281, BoringMath #31) vs the value group
+  U = K0(positions/game equality) (#12, #81); rational equivalence ↔ game
+  equality, cone ↔ partizan order.
+- **The moduli of game kinds** (#147 L.18.1): `GameKind` as data (perfectInfo
+  /chance/simultaneous/zeroSum/loopy) = variants on the ruleset-site (#106);
+  poker-vs-chess as computed data (`Games/Kind.lean` landed: minimax-
+  computable iff perfect+chance-free+alternating+acyclic; poker/go are not).
+  Solvers NOT implemented.
+- **Imperfect information** (#149 L.18.2): information sets = path-equivalence
+  by PORT-WORDS (observability = ports, #100/#107); GAL.0 #16 deck as the
+  epistemic layer.
+- **Quantum games** (#146 L.18.3): statement layer only, [O]-graded, EWL 1999
+  anchor; no QIT library at pin.
+- **Core-computad re-anchor** (#148 L.19.1): the computad primitive graduated
+  to `BoringMath.Foundations.Computad` (#391, with `ofCategory` #392) —
+  supersede the lab's `GradedGameComputad` onto the core; present #63's
+  category via `ofCategory`.
+- **Referee automorphism invariance** (#150 L.19.2): Aut(ruleset) acts on the
+  game computad; `Win` invariant — the general theorem behind #21's S3
+  enumeration.
+- **Games as epistemic processes** (#151 L.19.3): plays = fair experiments
+  (#28), value process = identification in the limit (#31/#285),
+  RegimeExperiment ↔ game regimes (#102); entropy bounds as game values
+  (QG #24/#50, statement layer).
+
+## 15. Higher computads / polygraphs (2026-11-01, tickets #152-#154)
+
+The path structure of imperfect-information games is homotopical: on a
+2-polygraph the path space has a genuine homotopy type, and information sets
+are its pi0-components (observability = port words, #107). Filed:
+
+- #153 L.20.1 — the 2-computad of games: `Doctrine.move` = 2-cells; imperfect
+  info = observational 2-cells; `win_twoCell_invariant` (Win descends to pi0);
+  localization = homotopy quotient (pi0 of plays / value-neutral 2-cells =
+  the value quotient #81 on bounded strata).
+- #152 L.20.3 — quantum strategies as local systems on the path 2-groupoid
+  (amplitudes = functor to Vect; Born rule over homotopy classes; classical
+  = pi0-functions); statement layer, EWL 1999 anchor.
+- #154 L.20.2 (to be filed) — the path complex = the play-line complex (#11):
+  Lemma C as a homotopy statement; the dark sector as higher homotopy.
+- #155 L.20.4 (to be filed) — 3-cells as coherence: regime cocycle (#64/#102),
+  Beck-Chevalley (#71) as 3-cell laws at the 3-polygraph level.
+
+Discipline upgraded: `docs/polygraph-first.md` (supersedes
+`docs/computad-first.md`); LAB META.1 #134 retitled polygraph-first.
