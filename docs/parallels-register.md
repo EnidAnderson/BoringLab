@@ -26,6 +26,7 @@ explicit structure realizes it.
 | 13 | 2-dimensional ports / properads (#113) | `Port2` (m,n)-pasting; `Computad2` with declared 2-cells; operads = (m,1) | `Doctrine/Computad2.lean` | statement-layer (skeleton, laws proved) |
 | 14 | Bar/cobar = path composition (#108) | word computad; concatenation = path composition | `Deform/BarCobar.lean` | proved (`wordPath_append`); `barDifferential` named hole |
 | 15 | Unshuffles ↔ Jacobi sums (#109) | `unshuffles`, `jacobiTrees` | `Deform/Jacobi.lean` | proved (combinatorics); bracket assembly named hole |
+| 16 | Bayesian ledger ↔ game value process (#167) | `ConservedMassProcess` (value/next/law; conservation law) | `Epistemology/Bayes.lean` (EPI side: `bayesUpdate_conservation` proved; coin toy 3 = 3) ↔ `Games/Trace.lean` (games side: statement-layer — Trace unverified at pin session, do-not-import) | proved (EPI side) / statement-layer (games side) |
 
 ## Rules
 

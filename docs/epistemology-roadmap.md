@@ -26,7 +26,7 @@ level ledger `mindChangesAtLevel` (#43) is the shared instrument.
 |---|---|---|---|
 | #165 (EPI.9.1) | learning as a limit in the theory-element category | #62, #31, #43 | statement-layer + toy-proved |
 | #166 (SCI.0.1.2) | history as a data stream (Tycho→Kepler through the level ledger) | SCI.0.1 #74, #43, EPI.5.1-fix | proved toy, no world-claim |
-| #167 (EPI.3.3) | Bayesian mass process = game value process (`MassProcess` + parallels row) | #31, TR.0 #10 | parallels row, toy-proved |
+| #167 (EPI.3.3) | Bayesian mass process = game value process (`ConservedMassProcess` + parallels row 16) | #31, TR.0 #10 | EPI half landed on pr/epi-truncation-learning (`Bayes.lean`: conservation proved, coin toy 3 = 3); games side statement-layer pending Trace verification |
 | #168 (EPI.3.4) | description-length complexity in the lab's own Lisp | #32, Lisp lane | toy-proved bound, relativization recorded |
 | #169 (L.18.4) | value of information in games (mass moved vs game value) | L.18.2, #28, L.19.3 | toy-proved, negative results first-class |
 
