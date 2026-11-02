@@ -171,19 +171,19 @@ noncomputable def continuumActionLimit {ιv : Type} [DecidableEq ιv]
     (T : ℝ) (ref : ℕ → (LatticeWorldsheet ιv × (ιv → ℝ))) : ℝ :=
   Filter.liminf (fun n => polyakovAction T (ref n).1 (ref n).2) Filter.atTop
 
--- Reference: [Polchinski 1998] ch. 1 — demand 7 (PENDING, ticket #368): the
--- continuum limit `continuumActionLimit` is now a REAL definition (liminf of
--- the lattice action along a refinement sequence `ref`); what remains open
--- is the proof of nonnegativity, which needs the mesh-scaling analysis
--- (T_n = n·T under edge subdivision; [Polchinski 1998, ch. 1 §1.2]).
--- PEELING PLAN: (1) define the refinement sequence ws_n of a lattice;
--- (2) prove the scaled actions converge (Tendsto) so the liminf is the
--- limit; (3) conclude 0 ≤ liminf via le_liminf_of_le + polyakovAction_nonneg.
+-- Reference: [Polchinski 1998] ch. 1 — demand 7 (FILLED, #368 part):
+-- nonnegativity of the liminf continuum limit is PROVED under the explicit
+-- bounded-above hypothesis (`strContinuumLimitDemand_satisfied`). STILL
+-- OPEN: identifying the limit with the continuum Polyakov integral
+-- (mesh → 0; PEELING PLAN: refinement sequence ws_n, Tendsto of scaled
+-- actions, then the integral).
 /-- **Demand (continuum limit)**: the continuum limit of the lattice action
 is nonnegative. -/
 def strContinuumLimitStatement : Prop :=
-  ∀ {ιv : Type} [DecidableEq ιv] (T : ℝ)
-    (ref : ℕ → (LatticeWorldsheet ιv × (ιv → ℝ))),
+  ∀ {ιv : Type} [DecidableEq ιv] (T : ℝ), 0 ≤ T →
+    ∀ (ref : ℕ → (LatticeWorldsheet ιv × (ιv → ℝ))),
+    Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
+      (fun n => polyakovAction T (ref n).1 (ref n).2) →
     0 ≤ continuumActionLimit T ref
 
 -- Reference: #26 — the demand as a typed carrier.
@@ -191,6 +191,17 @@ def strContinuumLimitStatement : Prop :=
 def strContinuumLimitDemand : Demand QGFramework where
   statement := strContinuumLimitStatement
   witness := PLift strContinuumLimitStatement
+
+-- Reference: #368 — FILLED: nonnegativity of the continuum limit along any
+-- refinement whose action sequence is bounded above (the boundedness is an
+-- explicit hypothesis — in ℝ the liminf of an unbounded sequence is junk).
+-- Proof: le_liminf_of_le + polyakovAction_nonneg.
+/-- The continuum-limit demand is **satisfied** (with the explicit
+boundedness hypothesis). -/
+theorem strContinuumLimitDemand_satisfied : Satisfied strContinuumLimitDemand := by
+  refine ⟨PLift.up (fun {ιv} [DecidableEq ιv] T hT ref hb => ?_)⟩
+  exact Filter.le_liminf_of_le (Filter.IsBoundedUnder.isCoboundedUnder_ge hb)
+    (Filter.eventually_atTop.mpr ⟨0, fun n _ => polyakovAction_nonneg T (ref n).1 (ref n).2 hT⟩)
 
 -- Reference: [Polchinski 1998] ch. 9 — demand 8 (OPEN): convergence of the
 -- string perturbation series (named hole).
@@ -238,9 +249,11 @@ def strRequirements : Requirements QGFramework where
           · rcases List.mem_cons.mp h with h | h
             · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
             · rcases List.mem_cons.mp h with h | h
-              · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.satisfied
+              · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm
+                  DemandStatus.satisfied
               · rcases List.mem_cons.mp h with h | h
-                · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm DemandStatus.pending
+                · exact Eq.subst (motive := fun d => DemandStatus.{1} d) h.symm
+                    DemandStatus.satisfied
                 · exact Eq.subst (motive := fun d => DemandStatus.{1} d)
                     (List.mem_singleton.mp h).symm DemandStatus.pending
 

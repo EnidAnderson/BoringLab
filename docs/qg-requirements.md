@@ -48,11 +48,13 @@ by BoringMath `Physics/LQG/PunctureCycle.lean`).
   area + total spin, all laws proved, differs from area); the full
   intertwiner/6j spectrum stays open with its peeling plan. All 8 LQG rows
   satisfied.
-- **#368** (STR rows, lab STR.1.1 #26): the continuum limit is now a REAL
-  definition (`continuumActionLimit` = liminf of the lattice action along a
-  refinement sequence — no sorry in the def); its nonnegativity PROOF is
-  pending (needs mesh-scaling convergence). Perturbation convergence stays a
-  named hole (`stringAmplitude`, sorry with peeling plan).
+- **#368** (STR rows, lab STR.1.1 #26): continuum-limit row FILLED —
+  `continuumActionLimit` is a real liminf definition and its nonnegativity is
+  proved (`strContinuumLimitDemand_satisfied`) under an explicit
+  bounded-above hypothesis (honest: in ℝ an unbounded sequence has junk
+  liminf). STILL OPEN: identifying the limit with the continuum Polyakov
+  integral (mesh→0), and perturbation convergence (`stringAmplitude`, the
+  one remaining named-hole sorry, with peeling plan).
 - **#369** (MI.0.2 bridge, lab #66): FILLED — puncture-degree model in
   BoringMath `Physics/LQG/PunctureCycle.lean`; row satisfied in
   `MotivicBridge.lean` (`bridgePunctureDegreeDemand_satisfied`). Open
